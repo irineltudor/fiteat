@@ -1,2 +1,2 @@
-# fiteat - android app
+# fiteat - App
 This is my bachelor's degree project
