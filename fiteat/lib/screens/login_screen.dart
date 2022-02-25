@@ -1,5 +1,9 @@
 // import 'package:fiteat/screens/registration_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/screens/home_screen.dart';
+import 'package:fiteat/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({ Key? key }) : super(key: key);
@@ -18,6 +22,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = new TextEditingController();
 
 
+  // firebase
+  final _auth = FirebaseAuth.instance;
+
+
   @override
   Widget build(BuildContext context) {
    
@@ -26,7 +34,21 @@ class _LoginScreenState extends State<LoginScreen> {
      autofocus: false,
      controller: emailController,
      keyboardType: TextInputType.emailAddress,
-    //  validator: (){},
+      validator:(value)
+      {
+          if(value!.isEmpty)
+          {
+            return ("Please enter your email");
+          }
+
+          //reg ex for email valid
+          if(!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value))
+          {
+            return ("Please eneter a valid email");
+          }
+
+          return null;
+      } ,
     onSaved:(value){
       emailController.text = value!;
     } ,
@@ -36,7 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
       contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
       hintText: "Email",
       border:  OutlineInputBorder(
-        borderRadius:BorderRadius.circular(10) )
+        borderRadius:BorderRadius.circular(10), ),
+
     ),
    );
 
@@ -51,13 +74,28 @@ class _LoginScreenState extends State<LoginScreen> {
      obscureText: true,
      controller: passwordController,
      keyboardType: TextInputType.emailAddress,
-    //  validator: (){},
+     validator: (value)
+     {
+       RegExp regex = new RegExp(r'^.{6,}$');
+       if(value!.isEmpty)
+       {
+         return ("Password is required for login");
+       }
+
+       if(!regex.hasMatch(value))
+       {
+          return("Enter a valid password (min 6 characters)");
+       }
+
+       return null;
+
+     },
     onSaved:(value){
       passwordController.text = value!;
     } ,
     textInputAction: TextInputAction.done,
     decoration: InputDecoration(
-      prefixIcon: const Icon(Icons.password),
+      prefixIcon: const Icon(Icons.vpn_key),
       contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
       hintText: "Password",
       border:  OutlineInputBorder(
@@ -72,7 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: MaterialButton(
         padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width/1.5,
-        onPressed: () {} ,
+        onPressed: () {
+          signIn(emailController.text, passwordController.text);
+        } ,
         child: const Text("Login",
           textAlign: TextAlign.center,
           style:TextStyle(
@@ -100,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(height: 200,
-                    child:Image.asset("assets/logo/fiteat_white.png",fit: BoxFit.contain,),
+                    child:Image.asset("assets/logo/fiteat_red.png",fit: BoxFit.contain,),
                     ),
                     SizedBox(height:45),
 
@@ -118,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text("Don't have an account? "),
                         GestureDetector(
                           onTap: (){
-                            // Navigator.push(context, MaterialPageRoute(builder: (context)=>RegistrationScreen()));
+                             Navigator.push(context, MaterialPageRoute(builder: (context)=>RegistrationScreen()));
                           },
                           child: Text("Sign up", style: TextStyle(
                             color:Colors.red,
@@ -134,5 +174,23 @@ class _LoginScreenState extends State<LoginScreen> {
         )
       )
     );
+  }
+
+  //login 
+  void signIn(String email,String password) async
+  {
+    if(_formKey.currentState!.validate())
+    {
+      await _auth.signInWithEmailAndPassword(email: email, password: password)
+          .then((uid) => 
+          {
+            Fluttertoast.showToast(msg: "Login Succesful"),
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>HomeScreen())),
+          })
+          .catchError((e)
+          {
+            Fluttertoast.showToast(msg: e!.message);
+          });
+    }
   }
 }

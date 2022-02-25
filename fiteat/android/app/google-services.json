@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "89869201888",
+    "project_id": "fiteat-db",
+    "storage_bucket": "fiteat-db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:89869201888:android:a15f7d51d519c5a7f6bb85",
+        "android_client_info": {
+          "package_name": "com.example.fiteat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "89869201888-aci8j7208g5ndiimp8jp1n6tb3qrnos6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fiteat",
+            "certificate_hash": "0922e2fba167fb797106afdc354db3c1d02dbc61"
+          }
+        },
+        {
+          "client_id": "89869201888-86k2m09c8d324dm9apaanhr8f57k8lnl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqP9v9NkbVzYlGQvHTz526mXVUTaaV5ok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "89869201888-86k2m09c8d324dm9apaanhr8f57k8lnl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
