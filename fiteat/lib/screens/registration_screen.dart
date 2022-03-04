@@ -55,6 +55,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "First Name",
         hintStyle: TextStyle(color:Colors.white),
+        errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -89,6 +90,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Second Name",
         hintStyle: TextStyle(color:Colors.white),
+        errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -123,6 +125,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Email",
         hintStyle: TextStyle(color:Colors.white),
+        errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -157,6 +160,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Password",
         hintStyle: TextStyle(color:Colors.white),
+        errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -187,6 +191,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Confirm Password",
         hintStyle: TextStyle(color:Colors.white),
+        errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -198,7 +203,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final signUpButton = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
-      color: const Color(0xFF60a847),
+      color: const Color(0xFFfc7b78),
       child: MaterialButton(
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         shape: RoundedRectangleBorder(
@@ -221,7 +226,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
 
     return Scaffold(
-        backgroundColor: const Color(0xFF60a847),
+        backgroundColor: const Color(0xFFfc7b78),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -236,7 +241,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         body: Center(
             child: SingleChildScrollView(
           child: Container(
-            color: const Color(0xFF60a847),
+            color: const Color(0xFFfc7b78),
             child: Padding(
               padding: const EdgeInsets.all(36),
               child: Form(
@@ -248,7 +253,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     SizedBox(
                       height: 200,
                       child: Image.asset(
-                        "assets/logo/fiteat_green.png",
+                        "assets/logo/fiteat_red.png",
                         fit: BoxFit.contain,
                       ),
                     ),
