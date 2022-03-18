@@ -39,8 +39,10 @@ class Storage{
     return downloadURL;
   }
 
-  Future<String> getProfilePicture(String imageName) async{
-    String downloadURL = await storage.ref('user-profile/gj7L6cA6kxdPjioeuHCvxCDXoVH2.png').getDownloadURL();
+  Future<String> getProfilePicture(String uid) async{
+    uid = 'gj7L6cA6kxdPjioeuHCvxCDXoVH2';
+    String imageUrl = 'user-profile/' + uid + '.png';
+    String downloadURL = await storage.ref(imageUrl).getDownloadURL();
 
     return downloadURL;
   }

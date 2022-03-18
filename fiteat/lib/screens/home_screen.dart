@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/screens/dairy_screen.dart';
 import 'package:fiteat/screens/login_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> getData() async {
         
-        FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection("users")
         .doc(user!.uid)
         .get()
@@ -59,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 197, 201, 207),
       bottomNavigationBar: ClipRRect(
@@ -71,6 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
             unselectedIconTheme:
                 const IconThemeData(color: Color.fromARGB(255, 197, 201, 207)),
             selectedItemColor: const Color(0xFFfc7b78),
+            onTap: (value){
+              if (value == 1) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const DiaryScreen()));
+            },
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
@@ -81,13 +86,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icons.book,
                 ),
                 label: "Dairy",
+                
               ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.add,
-                ),
-                label: "Add",
-              ),
+             
               BottomNavigationBarItem(
                 icon: Icon(
                   Icons.stacked_bar_chart,
@@ -153,11 +154,33 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(height:5),
-                      _RadialProgress(
-                        width: height * 0.18,
-                        height: height * 0.18,
-                        progress: 0.7,
+
+                      Row(
+                        children: [
+                          _RadialProgress(
+                            width: width * 0.3,
+                            height: width * 0.3,
+                            progress: 0.7,
+                          ),
+                          SizedBox(width: 10 ),
+
+                          Column(
+                        mainAxisAlignment:  MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          _MacrosProgress(macro: "Protein", left: 40 , progress: 0.6, progressColor: Color.fromARGB(255, 60, 10, 177),width:width*0.3 ,),
+                          SizedBox(height: 10,),
+                          _MacrosProgress(macro: "Carbs", left: 100 , progress: 0.3, progressColor: Colors.green,width:width*0.3),
+                          SizedBox(height: 10,),
+                          _MacrosProgress(macro: "Fat", left: 20 , progress: 0.8, progressColor: Colors.yellow,width:width*0.3),
+
+                        ],
                       )
+                        ],
+                      ),
+                      
+
                     ],
                   ) ,
                 )),
@@ -222,7 +245,7 @@ class _RadialProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: _RadialPainter(progress: 0.7),
+      painter: _RadialPainter(progressProtein:0.3,progressFats: 0.1,progressCarbs: 0.4),
       child: Container(
         height: height,
         width: width,
@@ -234,14 +257,14 @@ class _RadialProgress extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFFfc7b78)
+                color: Colors.black38
               )),
               TextSpan(text:"\n"),
               TextSpan(text : "kcal left",
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFFfc7b78)
+                color: Colors.black38
               ))
             ])
           ),
@@ -252,26 +275,97 @@ class _RadialProgress extends StatelessWidget {
 }
 
 class _RadialPainter extends CustomPainter{
-  final double progress;
+  final double progressProtein, progressCarbs,progressFats;
 
-  _RadialPainter({required this.progress});
+  _RadialPainter({required this.progressProtein,required this.progressCarbs,required this.progressFats,});
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
+    Paint paintProtein = Paint()
     ..strokeWidth = 10
     ..style = PaintingStyle.stroke
-    ..color = Color(0xFFfc7b78)
+    ..color = Color.fromARGB(255, 60, 10, 177)
+    ..strokeCap = StrokeCap.round;
+
+    Paint paintCarbs = Paint()
+    ..strokeWidth = 10
+    ..style = PaintingStyle.stroke
+    ..color = Colors.green
+    ..strokeCap = StrokeCap.square;
+
+    Paint paintFat = Paint()
+    ..strokeWidth = 10
+    ..style = PaintingStyle.stroke
+    ..color = Colors.yellow
+    ..strokeCap = StrokeCap.round;
+
+    Paint paintBlack = Paint()
+    ..strokeWidth = 15
+    ..style = PaintingStyle.stroke
+    ..color = Colors.black12
     ..strokeCap = StrokeCap.round;
 
     Offset center = Offset(size.width/2 , size.height/2);
 
-    canvas.drawArc(Rect.fromCircle(center: center, radius: size.width/2), math.radians(-90), math.radians(-360*progress), false, paint);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: size.width/2), math.radians(-90), math.radians(-360), false, paintBlack);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: size.width/2), math.radians(-90), math.radians(-360*progressProtein), false, paintProtein);
+  
+    canvas.drawArc(Rect.fromCircle(center: center, radius: size.width/2), math.radians(-90-360*(progressProtein+progressCarbs)), math.radians(-360*progressFats), false, paintFat);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: size.width/2), math.radians(-90-360*progressProtein), math.radians(-360*progressCarbs), false, paintCarbs);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
    return true;
+  }
+
+}
+
+class _MacrosProgress extends StatelessWidget{
+  final String macro;
+  final int left;
+  final double progress,width;
+   final Color progressColor;
+
+   const _MacrosProgress({Key? key, required this.macro,required this.left,required this.progress,required this.progressColor,required this.width}) : super(key:key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(macro.toUpperCase() , 
+        style: TextStyle(fontSize:14,
+        fontWeight: FontWeight.w700,
+        ),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment:MainAxisAlignment.spaceBetween ,
+          children: <Widget>[
+          Stack(
+            children: [
+              Container(
+                height: 10,
+                width: width,
+                decoration: BoxDecoration(color:Colors.black12, borderRadius: BorderRadius.all(Radius.circular(8))),
+                
+              ),
+              Container(
+                height: 10,
+                width: width*progress,
+                decoration: BoxDecoration(color:progressColor, borderRadius: BorderRadius.all(Radius.circular(8))),
+                
+              ),
+            ],
+          ),
+          SizedBox(width:10),
+
+          Text("${left}g left")
+        ],)
+
+      ],
+    );
   }
 
 }
