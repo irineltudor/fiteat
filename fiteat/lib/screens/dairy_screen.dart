@@ -2,7 +2,10 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/screens/add_exercises_screen.dart';
+import 'package:fiteat/screens/add_food_screen.dart';
 import 'package:fiteat/screens/home_screen.dart';
+import 'package:fiteat/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../model/user_model.dart';
@@ -58,8 +61,11 @@ class _DiaryScreenState extends State<DiaryScreen> {
             borderRadius: BorderRadius.circular(20),
             ),
         onPressed: () {
-          //breakfast,lunch,dinner
+          //In order to use go back
+          Navigator.push(context, MaterialPageRoute
+          (builder: (context) =>const AddFoodScreen())); 
         },
+      
         child: const Text(
           "Add Food",
           textAlign: TextAlign.center,
@@ -84,7 +90,9 @@ class _DiaryScreenState extends State<DiaryScreen> {
             borderRadius: BorderRadius.circular(20),
             ),
         onPressed: () {
-          //breakfast,lunch,dinner
+                    //In order to use go back
+          Navigator.push(context, MaterialPageRoute
+          (builder: (context) =>const AddExercisesScreen())); 
         },
         child: const Text(
           "Add Exercise",
@@ -116,6 +124,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
               if (value == 0)
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => const HomeScreen()));
+              if (value == 2) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const StatisticsScreen()));
             },
             items: const [
               BottomNavigationBarItem(

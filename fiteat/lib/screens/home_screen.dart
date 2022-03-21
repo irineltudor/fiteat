@@ -14,6 +14,8 @@ import '../model/user_model.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:intl/intl.dart';
 
+import 'statistics_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -75,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
             selectedItemColor: const Color(0xFFfc7b78),
             onTap: (value){
               if (value == 1) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const DiaryScreen()));
+              if (value == 2) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const StatisticsScreen()));
             },
             items: const [
               BottomNavigationBarItem(
