@@ -2,19 +2,22 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiteat/screens/dairy_screen.dart';
-import 'package:fiteat/screens/login_screen.dart';
+import 'package:fiteat/screens/diary/dairy_screen.dart';
+import 'package:fiteat/screens/home/news_screen.dart';
+import 'package:fiteat/screens/more/more_screen.dart';
+import 'package:fiteat/screens/signup-signin/login_screen.dart';
+import 'package:fiteat/screens/statistics/statistics_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import '../model/news.dart';
-import '../model/user_model.dart';
+import '../../model/news.dart';
+import '../../model/user_model.dart';
 
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:intl/intl.dart';
 
-import 'statistics_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -78,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: (value){
               if (value == 1) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const DiaryScreen()));
               if (value == 2) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const StatisticsScreen()));
+              if (value == 3) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const MoreScreen()));
             },
             items: const [
               BottomNavigationBarItem(
@@ -232,12 +236,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  Future<void> logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LoginScreen()));
-  }
 }
 
 class _RadialProgress extends StatelessWidget {
@@ -391,67 +389,79 @@ class _NewsCard extends StatelessWidget{
           ),
           child: Material(
             borderRadius: BorderRadius.all(Radius.circular(45)),
-            elevation: 4,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Flexible(
-                  fit:FlexFit.tight,
-                  child:  ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(45)),
-                    child: FutureBuilder(
-                      future: storage.downloadURL('${news.image}'),
-                      builder: (BuildContext context, AsyncSnapshot<String> snapshot){
-                        if(snapshot.connectionState == ConnectionState.done && snapshot.hasData)
-                            {
-                              return Image.network(snapshot.data!,
-                              width:300,
-                              fit: BoxFit.fitWidth);
+            child: MaterialButton(
+              splashColor: Colors.black26,
+             shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(45),
+            ),
+                    onPressed: () =>{
+                                    //In order to use go back
+          Navigator.push(context, MaterialPageRoute
+          (builder: (context) => NewsScreen(news: news)))
+      },child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Flexible(
+                    fit:FlexFit.tight,
+                    child:  ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(45)),
+                      child: FutureBuilder(
+                        future: storage.downloadURL('${news.image}'),
+                        builder: (BuildContext context, AsyncSnapshot<String> snapshot){
+                          if(snapshot.connectionState == ConnectionState.done && snapshot.hasData)
+                              {
+                                return Image.network(snapshot.data!,
+                                width:300,
+                                fit: BoxFit.fitWidth);
+                              }
+                            if(snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData){
+                              return Center(
+                                child: Container(
+                                  width: 150,
+                                  height: 150,
+                                  child: CircularProgressIndicator(color: Colors.grey,),),
+                              );
                             }
-                          if(snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData){
-                            return Container(
-                              width: 300,
-                              child: CircularProgressIndicator());
-                          }
-                  
-                          return Container();
-                      },
-                                
-                  
+                    
+                            return Container();
+                        },
+                                  
+                    
+                      ),
                     ),
                   ),
-                ),
-                Flexible(
-                  fit:FlexFit.tight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left:15.0,right: 15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children:[
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text("${news.title} - ${news.type}", 
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 19,
-                        color: Colors.black
-                        ),),
-                      Text("${news.summary} this text is here just to help me for summary", 
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: Colors.black45
-                        ),),
-                      const SizedBox(
-                        height: 16,
-                      )
-
-                      ]),
-                  ),)
-              ]),
+                  Flexible(
+                    fit:FlexFit.tight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left:15.0,right: 15.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children:[
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text("${news.title} - ${news.type}", 
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 19,
+                          color: Colors.black
+                          ),),
+                        Text("${news.summary} this text is here just to help me for summary", 
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          color: Colors.black45
+                          ),),
+                        const SizedBox(
+                          height: 16,
+                        )
+            
+                        ]),
+                    ),)
+                ]),
+            ),
             ),
 
     );

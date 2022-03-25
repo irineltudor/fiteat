@@ -1,21 +1,20 @@
-import 'dart:developer';
 
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiteat/screens/dairy_screen.dart';
-import 'package:fiteat/screens/login_screen.dart';
+import 'package:fiteat/model/user_model.dart';
+import 'package:fiteat/screens/diary/dairy_screen.dart';
+import 'package:fiteat/screens/more/more_screen.dart';
+import 'package:fiteat/screens/signup-signin/login_screen.dart';
+import 'package:fiteat/screens/statistics/add_progress_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
-import '../model/news.dart';
-import '../model/user_model.dart';
+import '../../model/news.dart';
+import '../../model/user_model.dart';
 
-import 'package:vector_math/vector_math_64.dart' as math;
-import 'package:intl/intl.dart';
 
-import 'home_screen.dart';
+import '../home/home_screen.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({Key? key}) : super(key: key);
@@ -54,19 +53,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final width = MediaQuery.of(context).size.width;
 
 
-        final addProgressButton = Material(
+    final addProgressButton = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(45),
       color: Colors.white,
       child: MaterialButton(
         splashColor: const Color(0xFFfc7b78),
-        textColor: Colors.white,
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width / 4,
            shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             ),
         onPressed: () {
+                                                                 //In order to use go back
+          Navigator.push(context, MaterialPageRoute
+          (builder: (context) => AddProgressScreen()));
         },
         child: const Text(
           "Add Progress",
@@ -106,6 +107,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               if (value == 1)
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => const DiaryScreen()));
+              if (value == 3) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const MoreScreen()));
             },
             items: const [
               BottomNavigationBarItem(
@@ -138,7 +140,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
           children: [
             Container(
-              height: 400,
+              height: height*0.7,
               padding: EdgeInsets.all(20),
               child: Card(
                 child: Padding(
@@ -177,6 +179,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       ),
     );
   }
+
 }
 
 class WeightData {

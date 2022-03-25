@@ -2,14 +2,15 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiteat/screens/add_exercises_screen.dart';
-import 'package:fiteat/screens/add_food_screen.dart';
-import 'package:fiteat/screens/home_screen.dart';
-import 'package:fiteat/screens/statistics_screen.dart';
+import 'package:fiteat/screens/diary/add_exercises_screen.dart';
+import 'package:fiteat/screens/diary/add_food_screen.dart';
+import 'package:fiteat/screens/home/home_screen.dart';
+import 'package:fiteat/screens/more/more_screen.dart';
+import 'package:fiteat/screens/statistics/statistics_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../model/user_model.dart';
-import '../service/storage_service.dart';
+import '../../model/user_model.dart';
+import '../../service/storage_service.dart';
 
 class DiaryScreen extends StatefulWidget {
   const DiaryScreen({Key? key}) : super(key: key);
@@ -125,6 +126,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => const HomeScreen()));
               if (value == 2) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const StatisticsScreen()));
+              if (value == 3) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const MoreScreen()));
             },
             items: const [
               BottomNavigationBarItem(

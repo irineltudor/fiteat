@@ -1,8 +1,8 @@
 // import 'package:fiteat/screens/registration_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiteat/screens/details_screen.dart';
-import 'package:fiteat/screens/home_screen.dart';
-import 'package:fiteat/screens/registration_screen.dart';
+import 'package:fiteat/screens/signup-signin/details_screen.dart';
+import 'package:fiteat/screens/home/home_screen.dart';
+import 'package:fiteat/screens/signup-signin/registration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
