@@ -1,15 +1,12 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiteat/screens/diary/dairy_screen.dart';
-import 'package:fiteat/screens/more/change_email.dart';
+import 'package:fiteat/screens/more/change_password.dart';
 import 'package:fiteat/screens/more/change_goal.dart';
 import 'package:fiteat/screens/signup-signin/login_screen.dart';
 import 'package:fiteat/screens/statistics/statistics_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
-import 'package:fiteat/widget/date_picker_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import '../../model/news.dart';
 import '../../model/user_model.dart';
@@ -30,6 +27,8 @@ class _MoreScreenState extends State<MoreScreen> {
   UserModel loggedInUser = UserModel();
   List<News> news = [];
   News oneNews = News();
+
+  
 
   @override
   void initState() {
@@ -75,29 +74,8 @@ class _MoreScreenState extends State<MoreScreen> {
         ),
       );
 
-    final changePassword =  Material(
-      elevation: 5,
-      borderRadius: BorderRadius.circular(30),
-      color: Colors.white,
-      child: MaterialButton(
-        padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-            side: BorderSide(color: Colors.black)),
-        minWidth: MediaQuery.of(context).size.width / 2  ,
-        onPressed: () =>{
-        },
-        child: FittedBox(
-            child: Text(
-              'Change Password',
-              style: TextStyle(fontSize:16, color: Colors.black),
-            ),
-          ),
-        ),
-      );
 
-
-    final changeEmail=  Material(
+    final changePassword=  Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
       color: Colors.white,
@@ -111,11 +89,11 @@ class _MoreScreenState extends State<MoreScreen> {
 
                                                        //In order to use go back
           Navigator.push(context, MaterialPageRoute
-          (builder: (context) => ChangeEmailScreen()))
+          (builder: (context) => ChangePasswordScreen()))
         },
         child: FittedBox(
             child: Text(
-              'Change Email',
+              'Change Password',
               style: TextStyle(fontSize:16, color: Colors.black),
             ),
           ),
@@ -168,6 +146,12 @@ class _MoreScreenState extends State<MoreScreen> {
         ),
       );
 
+
+    if(loggedInUser.dob == null)
+      return Container(
+        color: Color(0xFFfc7b78),
+        child: Center(child: CircularProgressIndicator(color: Colors.white,)));
+    else
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 197, 201, 207),
       appBar: AppBar(
@@ -275,15 +259,13 @@ class _MoreScreenState extends State<MoreScreen> {
                           fontSize: 26,
                           color: Colors.black
                         )),
-                        SizedBox(height: 15,),
+                        SizedBox(height: 45,),
                         changePictureButton,
                         SizedBox(height: 15,),
-                        changeEmail,
+                        changePassword,
                         SizedBox(height: 15,),
                         changeGoal,
-                        SizedBox(height: 15,),
-                        DatePickerWidget(color: Colors.black,userDate: 'MM/DD/YY',buttonColor: Colors.white,),
-                        SizedBox(height: 40,),
+                        SizedBox(height: 45,),
                         logoutButton
                     ])),
               ),
@@ -293,6 +275,7 @@ class _MoreScreenState extends State<MoreScreen> {
       ),
     );
   }
+
 
   
     Future<void> logout(BuildContext context) async {

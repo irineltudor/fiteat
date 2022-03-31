@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiteat/model/user_model.dart';
@@ -6,6 +8,7 @@ import 'package:fiteat/widget/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 class ChangeGoalScreen extends StatefulWidget {
   const ChangeGoalScreen({Key? key}) : super(key: key);
@@ -15,43 +18,55 @@ class ChangeGoalScreen extends StatefulWidget {
 }
 
 class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
-  final _auth = FirebaseAuth.instance;
+  User? user = FirebaseAuth.instance.currentUser;
+  UserModel loggedInUser = UserModel();
+
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   final _formKey = GlobalKey<FormState>();
 
   final weightEditingController = TextEditingController();
-  final goalWeightEditingController = TextEditingController();
+  final heightEditingController = TextEditingController();
   final activityLevelEditingController = TextEditingController();
   final weeklyGoalEditingController = TextEditingController();
   final confirmweeklyGoalEditingController = TextEditingController();
+  final caloriesEditingController = TextEditingController();
+
+  TextEditingController birthEditingControler = new TextEditingController();
 
   // string for displaying the error
   String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  Future<void> getData() async {
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      loggedInUser = UserModel.fromMap(value.data());
+      birthEditingControler.text = loggedInUser.dob.toString();
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
-    //first name field
     final weightField = TextFormField(
       autofocus: false,
       controller: weightEditingController,
       style: const TextStyle(color: Colors.black),
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      validator: (value) {
-        RegExp regex = new RegExp(r'[+-]?([0-9]*[.])?[0-9]+');
-        if (value!.isEmpty) {
-          return ("Current weight cannot be empty");
-        }
-
-        if (!regex.hasMatch(value)) {
-          return ("Enter a valid weight");
-        }
-
-        return null;
-      },
+      validator: (value) {},
       onSaved: (value) {
         weightEditingController.text = value!;
       },
@@ -62,49 +77,70 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
           color: Colors.black,
         ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: "Current weight",
+        hintText: "Change current weight",
         hintStyle: TextStyle(color: Colors.black),
         errorStyle: TextStyle(color: Colors.black),
-        border: InputBorder.none,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(color: Colors.black)),
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
-            borderSide: BorderSide(color: Colors.white)),
+            borderSide: BorderSide(color: Colors.black)),
       ),
     );
 
-    //second name field
-    final goalWeightField = TextFormField(
+    final heightField = TextFormField(
       autofocus: false,
-      controller: goalWeightEditingController,
+      controller: heightEditingController,
       style: const TextStyle(color: Colors.black),
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      validator: (value) {
-        RegExp regex = new RegExp(r'[+-]?([0-9]*[.])?[0-9]+');
-        if (value!.isEmpty) {
-          return ("Goal Weight cannot be empty");
-        }
-
-        if (!regex.hasMatch(value)) {
-          return ("Enter a valid weight");
-        }
-
-        return null;
-      },
+      validator: (value) {},
       onSaved: (value) {
-        goalWeightEditingController.text = value!;
+        heightEditingController.text = value!;
       },
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
         prefixIcon: Icon(
-          Icons.check,
+          Icons.height,
           color: Colors.black,
         ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: "Goal Weight",
+        hintText: "Change current height",
         hintStyle: TextStyle(color: Colors.black),
         errorStyle: TextStyle(color: Colors.black),
-        border: InputBorder.none,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(color: Colors.black)),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(color: Colors.black)),
+      ),
+    );
+
+    final caloriesField = TextFormField(
+      autofocus: false,
+      controller: caloriesEditingController,
+      style: const TextStyle(color: Colors.black),
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      validator: (value) {},
+      onSaved: (value) {
+        caloriesEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: const InputDecoration(
+        prefixIcon: Icon(
+          Icons.food_bank,
+          color: Colors.black,
+        ),
+        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "Change calories for everyday",
+        hintStyle: TextStyle(color: Colors.black),
+        errorStyle: TextStyle(color: Colors.black),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(color: Colors.black)),
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
             borderSide: BorderSide(color: Colors.black)),
@@ -131,10 +167,10 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
                   borderSide: BorderSide(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                                focusedBorder:OutlineInputBorder(
+                focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.black, width: 1),
                   borderRadius: BorderRadius.circular(20),
-                ), 
+                ),
                 filled: true,
                 fillColor: Colors.white,
               ),
@@ -145,6 +181,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   selectedValue = newValue!;
+                  activityLevelEditingController.text = newValue;
                 });
               },
               items: activityLevel)),
@@ -170,10 +207,10 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
                   borderSide: BorderSide(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                focusedBorder:OutlineInputBorder(
+                focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.black, width: 1),
                   borderRadius: BorderRadius.circular(20),
-                ), 
+                ),
                 filled: true,
                 fillColor: Colors.white,
               ),
@@ -184,19 +221,28 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   selectedGoal = newValue!;
+                  weeklyGoalEditingController.text = newValue;
                 });
               },
               items: weeklyGoal)),
     ]);
 
-   final updateButton = Material(
+    final updateButton = Material(
       elevation: 5,
       color: const Color(0xFFfc7b78),
       child: MaterialButton(
         splashColor: Colors.white30,
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width / 4,
-        onPressed: () {},
+        onPressed: () {
+          updateDetails(
+              weightEditingController.text,
+              heightEditingController.text,
+              activityLevelEditingController.text,
+              weeklyGoalEditingController.text,
+              caloriesEditingController.text,
+              birthEditingControler.text);
+        },
         child: const Text(
           "Update",
           textAlign: TextAlign.center,
@@ -209,90 +255,227 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
       ),
     );
 
+    String currentActivityLevel = "";
 
-    return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 197, 201, 207),
-              appBar: AppBar(
-        backgroundColor: const Color(0xFFfc7b78),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        centerTitle: true,
-        title: const Text('Goal', style: TextStyle(color: Colors.white)),
-      ),
-              bottomNavigationBar: ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-          child: updateButton),
-        body: Stack(
-          children: [
-            Positioned(
-            top: height * 0.02,
-            height: height * 0.78,
-            left: height * 0.005,
-            right: height * 0.005,
-              child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(45)),
-                child: Container(
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(36),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          const SizedBox(height: 45),
-                          weightField,
-                          const SizedBox(height: 20),
-                          goalWeightField,
-                          const SizedBox(height: 20),
-                          activityLevelField,
-                          const SizedBox(height: 20),
-                          weeklyGoalField
-                        ],
+    String currentWeeklyGoal = "";
+
+    switch (loggedInUser.activitylevel) {
+      case 0:
+        currentActivityLevel = "Not Very Active";
+        break;
+
+      case 1:
+        currentActivityLevel = "Lightly Active";
+        break;
+
+      case 2:
+        currentActivityLevel = "Active";
+        break;
+
+      case 3:
+        currentActivityLevel = "Very Active";
+        break;
+    }
+
+
+    switch (loggedInUser.goal.toString()) {
+      case "-0.2":
+        currentWeeklyGoal = "Lose 0,2 kg per week";
+        break;
+
+      case "-0.5":
+        currentWeeklyGoal = "Lose 0,5 kg per week";
+        break;
+
+      case "-0.8":
+        currentWeeklyGoal = "Lose 0,8 kg per week";
+        break;
+
+      case "-1.0":
+        currentWeeklyGoal = "Lose 1 kg per week";
+        break;
+
+      case "0.0":
+        currentWeeklyGoal = "Maintain weight";
+        break;
+
+      case "0.2":
+        currentWeeklyGoal = "Gain 0,2 kg per week";
+        break;
+
+      case "0.5":
+        currentWeeklyGoal = "Gain 0,5 kg per week";
+        break;
+    }
+
+    if (loggedInUser.dob == null)
+      return Container(
+          color: Color(0xFFfc7b78),
+          child: Center(
+              child: CircularProgressIndicator(
+            color: Colors.white,
+          )));
+    else
+      return Scaffold(
+          backgroundColor: const Color.fromARGB(255, 197, 201, 207),
+          appBar: AppBar(
+            backgroundColor: const Color(0xFFfc7b78),
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            centerTitle: true,
+            title: const Text('Goal', style: TextStyle(color: Colors.white)),
+          ),
+          bottomNavigationBar: ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(40)),
+              child: updateButton),
+          body: Stack(
+            children: [
+              Positioned(
+                top: height * 0.02,
+                height: height * 0.78,
+                left: height * 0.005,
+                right: height * 0.005,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(45)),
+                  child: Container(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(36),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Column(
+                              children: [
+                                Text(
+                                    "Current calories : ${loggedInUser.goalcalories} calories"),
+                                Text(
+                                    "Current weight : ${loggedInUser.weight} kg"),
+                                Text(
+                                    "Current height : ${loggedInUser.height} cm"),
+                                Text(
+                                    "Current activity level : ${currentActivityLevel}"),
+                                Text(
+                                    "Current weekly goal: ${currentWeeklyGoal}"),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            caloriesField,
+                            const SizedBox(height: 15),
+                            weightField,
+                            const SizedBox(height: 15),
+                            heightField,
+                            const SizedBox(height: 15),
+                            activityLevelField,
+                            const SizedBox(height: 15),
+                            weeklyGoalField,
+                            const SizedBox(height: 15),
+                            DatePickerWidget(
+                                color: Colors.black,
+                                userDate: '${loggedInUser.dob}',
+                                buttonColor: Colors.white,
+                                dob: birthEditingControler)
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ));
+            ],
+          ));
   }
 
-  postDetailsToFirestore() async {}
+  void updateDetails(String weight, String height, String activitylevel,
+      String goal, String goalCaloriesSet, String dob) {
+    loggedInUser.weight =
+        weight == "" ? loggedInUser.weight : double.parse(weight);
+    loggedInUser.height =
+        height == "" ? loggedInUser.height : double.parse(height);
+    loggedInUser.activitylevel = activitylevel == ""
+        ? loggedInUser.activitylevel
+        : int.parse(activitylevel);
+    loggedInUser.goal = goal == "" ? loggedInUser.goal : double.parse(goal);
+
+    DateTime today = DateTime.now();
+    DateTime date = new DateFormat('dd-MM-yyyy').parse(dob);
+
+    int age = (today.difference(date).inDays / 365).floor();
+
+    double BMR = 0;
+    if (loggedInUser.gender == "Man") {
+      BMR = 66.47 +
+          (13.75 * double.parse(loggedInUser.weight.toString())) +
+          (5.003 * double.parse(loggedInUser.height.toString())) -
+          (6.755 * age);
+    } else {
+      BMR = 655.1 +
+          (9.563 * double.parse(loggedInUser.weight.toString())) +
+          (1.850 * double.parse(loggedInUser.height.toString())) -
+          (4.676 * age);
+    }
+    double AMS = 0;
+    switch (loggedInUser.activitylevel) {
+      case 0:
+        AMS = BMR * 1.2;
+        break;
+
+      case 1:
+        AMS = BMR * 1.375;
+        break;
+
+      case 2:
+        AMS = BMR * 1.55;
+        break;
+
+      case 3:
+        AMS = BMR * 1.725;
+        break;
+    }
+
+    AMS = AMS - 1000 * double.parse(loggedInUser.goal.toString());
+
+    int goalCalories =
+        goalCaloriesSet == "" ? AMS.round() : int.parse(goalCaloriesSet);
+
+    loggedInUser.goalcalories = goalCalories;
+
+    firebaseFirestore
+        .collection("users")
+        .doc(loggedInUser.uid)
+        .update(loggedInUser.toMap());
+
+    setState(() {});
+  }
 }
 
 List<DropdownMenuItem<String>> get activityLevel {
   List<DropdownMenuItem<String>> activityLevelItems = [
-    DropdownMenuItem(child: Text("Not Very Active"), value: "Not Very Active"),
-    DropdownMenuItem(child: Text("Lightly Active"), value: "Lightly Active"),
-    DropdownMenuItem(child: Text("Active"), value: "Active"),
-    DropdownMenuItem(child: Text("Very Active"), value: "Very Active"),
+    DropdownMenuItem(child: Text("Not Very Active"), value: "0"),
+    DropdownMenuItem(child: Text("Lightly Active"), value: "1"),
+    DropdownMenuItem(child: Text("Active"), value: "2"),
+    DropdownMenuItem(child: Text("Very Active"), value: "3"),
   ];
   return activityLevelItems;
 }
 
 List<DropdownMenuItem<String>> get weeklyGoal {
   List<DropdownMenuItem<String>> weeklyGoalItems = [
-    DropdownMenuItem(
-        child: Text("Lose 0,2 kg per week"), value: "Lose 0,2 kg per week"),
-    DropdownMenuItem(
-        child: Text("Lose 0,5 kg per week"), value: "Lose 0,5 kg per week"),
-    DropdownMenuItem(
-        child: Text("Lose 0,8 kg per week"), value: "Lose 0,8 kg per week"),
-    DropdownMenuItem(
-        child: Text("Lose 1 kg per week"), value: "Lose 1 kg per week"),
-    DropdownMenuItem(child: Text("Maintain weight"), value: "Maintain weight"),
-    DropdownMenuItem(
-        child: Text("Gain 0,2 kg per week"), value: "Gain 0,2 kg per week"),
-    DropdownMenuItem(
-        child: Text("Gain 0,5 kg per week"), value: "Gain 0,5 kg per week"),
+    DropdownMenuItem(child: Text("Lose 0,2 kg per week"), value: "-0.2"),
+    DropdownMenuItem(child: Text("Lose 0,5 kg per week"), value: "-0.5"),
+    DropdownMenuItem(child: Text("Lose 0,8 kg per week"), value: "-0.8"),
+    DropdownMenuItem(child: Text("Lose 1 kg per week"), value: "-1"),
+    DropdownMenuItem(child: Text("Maintain weight"), value: "0"),
+    DropdownMenuItem(child: Text("Gain 0,2 kg per week"), value: "0.2"),
+    DropdownMenuItem(child: Text("Gain 0,5 kg per week"), value: "0.5"),
   ];
   return weeklyGoalItems;
 }

@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class ChangeEmailScreen extends StatefulWidget {
-  const ChangeEmailScreen({Key? key}) : super(key: key);
+class ChangePasswordScreen extends StatefulWidget {
+  const ChangePasswordScreen({Key? key}) : super(key: key);
 
   @override
-  _ChangeEmailScreenState createState() => _ChangeEmailScreenState();
+  _ChangePasswordScreenState createState() => _ChangePasswordScreenState();
 }
 
-class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _auth = FirebaseAuth.instance;
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
@@ -22,7 +22,9 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
   final _formKey = GlobalKey<FormState>();
 
 
- final TextEditingController emailController = TextEditingController();
+ final TextEditingController currentPasswordEditingController = TextEditingController();
+ final TextEditingController newPasswordEditingController = TextEditingController();
+ final TextEditingController renewPasswordEditingController  = TextEditingController();
   // string for displaying the error
   String? errorMessage;
 
@@ -53,31 +55,31 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
-    final emailField = TextFormField(
+    final currentPasswordField = TextFormField(
       autofocus: false,
-      controller: emailController,
+      controller: currentPasswordEditingController,
       style: const TextStyle(color: Colors.black),
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
+       RegExp regex = new RegExp(r'^.{6,}$');
         if (value!.isEmpty) {
-          return ("Please enter your email");
+          return ("Password is required for login");
         }
 
-        //reg ex for email valid
-        if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
-          return ("Please eneter a valid email");
+        if (!regex.hasMatch(value)) {
+          return ("Enter a valid password (min 6 characters)");
         }
 
         return null;
       },
       onSaved: (value) {
-        emailController.text = value!;
+        currentPasswordEditingController.text = value!;
       },
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
-        prefixIcon: Icon(Icons.mail, color: Colors.black),
+        prefixIcon: Icon(Icons.check, color: Colors.black),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: "Email",
+        hintText: "Current Password",
         hintStyle: TextStyle(color: Colors.black),
         errorStyle: TextStyle(color: Colors.black),
         border: InputBorder.none,
@@ -87,6 +89,71 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
       ),
     );
 
+
+    final newPasswordField = TextFormField(
+      autofocus: false,
+      controller: newPasswordEditingController,
+      style: const TextStyle(color: Colors.black),
+      keyboardType: TextInputType.emailAddress,
+      validator: (value) {
+       RegExp regex = new RegExp(r'^.{6,}$');
+        if (value!.isEmpty) {
+          return ("Password is required for login");
+        }
+
+        if (!regex.hasMatch(value)) {
+          return ("Enter a valid password (min 6 characters)");
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        newPasswordEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.vpn_key, color: Colors.black),
+        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "New Password",
+        hintStyle: TextStyle(color: Colors.black),
+        errorStyle: TextStyle(color: Colors.black),
+        border: InputBorder.none,
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(color: Colors.black)),
+      ),
+    );
+
+
+        final renewPasswordField = TextFormField(
+      autofocus: false,
+      controller: renewPasswordEditingController,
+      style: const TextStyle(color: Colors.black),
+      keyboardType: TextInputType.emailAddress,
+      validator: (value) {
+          if (newPasswordEditingController.text !=
+            renewPasswordEditingController.text) {
+          return ("Passwords don't match");
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        renewPasswordEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.restart_alt, color: Colors.black),
+        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "Confirm Password",
+        hintStyle: TextStyle(color: Colors.black),
+        errorStyle: TextStyle(color: Colors.black),
+        border: InputBorder.none,
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(color: Colors.black)),
+      ),
+    );
     
 
    final updateButton = Material(
@@ -122,7 +189,7 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
           },
         ),
         centerTitle: true,
-        title: const Text('Email', style: TextStyle(color: Colors.white)),
+        title: const Text('Change Password', style: TextStyle(color: Colors.white)),
       ),
               bottomNavigationBar: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
@@ -146,19 +213,18 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                            Text('Current email : ${loggedInUser.email} ' , 
-                              style: TextStyle(color: Colors.blueGrey,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800),),
-                          const SizedBox(height: 45),
                           Column(
                             children: [
-                              Text('Change your email : ' , 
+                              Text('Change your password: ' , 
                               style: TextStyle(color: Colors.black,
                               fontSize: 18,
                               fontWeight: FontWeight.w800),),
                               SizedBox(height: 20,),
-                              emailField,
+                              currentPasswordField,
+                              SizedBox(height: 20,),
+                              newPasswordField,
+                              SizedBox(height: 20,),
+                              renewPasswordField,
                             ],
                           )
                         ],

@@ -51,12 +51,20 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {});
     });
 
+
+
       FirebaseFirestore.instance
         .collection("news")
-        .doc("news-id")
         .get()
         .then((value) {
-      oneNews = News.fromMap(value.data());
+        value.docs.forEach(
+          (new_news) => {
+            oneNews = News (),
+            oneNews = News.fromMap(new_news.data()),
+            news.add(oneNews)
+            
+          }
+        );
       setState(() {});
     });
 
@@ -222,8 +230,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(
                                 width: 32,
                               ),
-                              for(int i=0;i < 4 ;i++)
-                              _NewsCard(news: oneNews,),
+                              for(int i=0;i < news.length ;i++)
+                              _NewsCard(news: news[i],),
                       ],
                     )),),
                     SizedBox(

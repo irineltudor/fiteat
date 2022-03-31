@@ -179,7 +179,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "$goal",
+                                "${loggedInUser.goalcalories}",
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
