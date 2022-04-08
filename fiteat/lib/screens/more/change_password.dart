@@ -22,7 +22,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
 
 
- final TextEditingController currentPasswordEditingController = TextEditingController();
  final TextEditingController newPasswordEditingController = TextEditingController();
  final TextEditingController renewPasswordEditingController  = TextEditingController();
   // string for displaying the error
@@ -55,46 +54,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
-    final currentPasswordField = TextFormField(
-      autofocus: false,
-      controller: currentPasswordEditingController,
-      style: const TextStyle(color: Colors.black),
-      keyboardType: TextInputType.emailAddress,
-      validator: (value) {
-       RegExp regex = new RegExp(r'^.{6,}$');
-        if (value!.isEmpty) {
-          return ("Password is required for login");
-        }
-
-        if (!regex.hasMatch(value)) {
-          return ("Enter a valid password (min 6 characters)");
-        }
-
-        return null;
-      },
-      onSaved: (value) {
-        currentPasswordEditingController.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: const InputDecoration(
-        prefixIcon: Icon(Icons.check, color: Colors.black),
-        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: "Current Password",
-        hintStyle: TextStyle(color: Colors.black),
-        errorStyle: TextStyle(color: Colors.black),
-        border: InputBorder.none,
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            borderSide: BorderSide(color: Colors.black)),
-      ),
-    );
-
 
     final newPasswordField = TextFormField(
       autofocus: false,
       controller: newPasswordEditingController,
+      obscureText: true,
       style: const TextStyle(color: Colors.black),
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.visiblePassword,
       validator: (value) {
        RegExp regex = new RegExp(r'^.{6,}$');
         if (value!.isEmpty) {
@@ -127,6 +93,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
         final renewPasswordField = TextFormField(
       autofocus: false,
+      obscureText: true,
       controller: renewPasswordEditingController,
       style: const TextStyle(color: Colors.black),
       keyboardType: TextInputType.emailAddress,
@@ -163,7 +130,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         splashColor: Colors.white30,
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width / 4,
-        onPressed: () {},
+        onPressed: () {
+
+          changePassword(newPasswordEditingController.text);
+        },
         child: const Text(
           "Update",
           textAlign: TextAlign.center,
@@ -220,8 +190,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               fontSize: 18,
                               fontWeight: FontWeight.w800),),
                               SizedBox(height: 20,),
-                              currentPasswordField,
-                              SizedBox(height: 20,),
                               newPasswordField,
                               SizedBox(height: 20,),
                               renewPasswordField,
@@ -238,5 +206,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ));
   }
 
-  postDetailsToFirestore() async {}
+  void changePassword(String newPassword) {
+   if (_formKey.currentState!.validate()) {
+      user?.updatePassword(newPassword).then((value) => errorMessage = "Successfully changed password").catchError((onError){
+            errorMessage = "Password can't be changed" + onError.toString();
+      });
+
+      Fluttertoast.showToast(msg: '$errorMessage');
+      
+   }
 }
+}
+
+

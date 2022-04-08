@@ -1,21 +1,31 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/model/diary.dart';
+import 'package:fiteat/model/exercise.dart';
 import 'package:fiteat/model/user_model.dart';
+import 'package:fiteat/screens/diary/dairy_screen.dart';
 import 'package:fiteat/screens/home/home_screen.dart';
 import 'package:fiteat/widget/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class ExcerciseScreen extends StatefulWidget {
-  const ExcerciseScreen({Key? key}) : super(key: key);
+class ExerciseScreen extends StatefulWidget {
+  String exerciseId;
+  ExerciseScreen({Key? key,required this.exerciseId}) : super(key: key);
 
   @override
-  _ExcerciseScreenState createState() => _ExcerciseScreenState();
+  _ExerciseScreenState createState() => _ExerciseScreenState(exerciseId:exerciseId);
 }
 
-class _ExcerciseScreenState extends State<ExcerciseScreen> {
+class _ExerciseScreenState extends State<ExerciseScreen> {
   final _auth = FirebaseAuth.instance;
+  User? user = FirebaseAuth.instance.currentUser;
+  UserModel loggedInUser = UserModel();
+  Exercise exercise = Exercise();
+  String exerciseId;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -23,6 +33,34 @@ class _ExcerciseScreenState extends State<ExcerciseScreen> {
 
   // string for displaying the error
   String? errorMessage;
+
+  _ExerciseScreenState({Key? key,required this.exerciseId});
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  Future<void> getData() async {
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+
+    FirebaseFirestore.instance
+        .collection("exercises")
+        .doc(exerciseId)
+        .get()
+        .then((value) {
+      exercise = Exercise.fromMap(value.data());
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +96,8 @@ class _ExcerciseScreenState extends State<ExcerciseScreen> {
           color: Colors.black,
         ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: "type minutes performed",
-        hintStyle: TextStyle(color: Colors.black),
+        hintText: "Time in seconds",
+        hintStyle: TextStyle(color: Colors.black54),
         errorStyle: TextStyle(color: Colors.black),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -72,16 +110,19 @@ class _ExcerciseScreenState extends State<ExcerciseScreen> {
         
     );
 
-    final updateButton = Material(
+    final addExerciseButton = Material(
       elevation: 5,
       color: const Color(0xFFfc7b78),
       child: MaterialButton(
         splashColor: Colors.white30,
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width / 4,
-        onPressed: () {},
+        onPressed: () {
+            addExerciseToDiary(timeEditingController.text);
+
+        },
         child: const Text(
-          "Add Excercise",
+          "Add Exercise",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
@@ -92,6 +133,15 @@ class _ExcerciseScreenState extends State<ExcerciseScreen> {
       ),
     );
 
+
+    if ( exercise.name == null || loggedInUser.activitylevel == null)
+      return Container(
+          color: Color(0xFFfc7b78),
+          child: Center(
+              child: CircularProgressIndicator(
+            color: Colors.white,
+          )));
+    else {
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 197, 201, 207),
         appBar: AppBar(
@@ -108,7 +158,7 @@ class _ExcerciseScreenState extends State<ExcerciseScreen> {
         ),
         bottomNavigationBar: ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-            child: updateButton),
+            child: addExerciseButton),
         body: Center(
           child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(45)),
@@ -125,7 +175,7 @@ class _ExcerciseScreenState extends State<ExcerciseScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "Excercise name",
+                        exercise.name!,
                         style: TextStyle(
                             fontSize: 18,
                             color: Colors.black,
@@ -148,9 +198,9 @@ class _ExcerciseScreenState extends State<ExcerciseScreen> {
                           ),
                           SizedBox(width: width*0.028,),
                           Text(
-                            "Calories burned : 100",
+                            "Calories burned per minute : ${exercise.caloriesPerMinute!.toInt()}",
                             style: TextStyle(
-                              fontSize: 17,
+                              fontSize: 14,
                               color: Colors.black,
                               fontWeight: FontWeight.w400,
                             ),
@@ -164,7 +214,44 @@ class _ExcerciseScreenState extends State<ExcerciseScreen> {
             ),
           ),
         ));
+    }
   }
 
-  postDetailsToFirestore() async {}
+
+
+  void addExerciseToDiary(String time) async{
+    if(_formKey.currentState!.validate())
+    {
+            Diary diary;
+            String id = exercise.id!;
+            double timeInSeconds = double.parse(time);
+            double caloriesBurned = exercise.caloriesPerMinute! * (timeInSeconds/60);
+            LinkedHashMap<String, double> element =  LinkedHashMap();
+            element[id] = timeInSeconds;
+
+            await FirebaseFirestore.instance
+              .collection('diary')
+              .doc(loggedInUser.uid)
+              .get()
+              .then((value)=>{
+                  diary = Diary.fromMap(value.data()),
+                  if(diary.exercises!.containsKey(id) == true ){
+                      diary.exercises!.update(id, (value) => value + timeInSeconds)
+                  } 
+                  else
+                  diary.exercises!.addAll(element),
+                  diary.exercise = diary.exercise! + caloriesBurned,
+                  FirebaseFirestore.instance.collection('diary')
+                  .doc(loggedInUser.uid)
+                  .set(diary.toMap())
+              });
+         Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => const DiaryScreen()),
+        (route) => false);
+
+    }
+
+
+  }
 }

@@ -65,12 +65,12 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
       controller: weightEditingController,
       style: const TextStyle(color: Colors.black),
       keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
       validator: (value) {},
       onSaved: (value) {
         weightEditingController.text = value!;
       },
-      textInputAction: TextInputAction.next,
+      textInputAction: TextInputAction.done,
       decoration: const InputDecoration(
         prefixIcon: Icon(
           Icons.scale,
@@ -94,12 +94,12 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
       controller: heightEditingController,
       style: const TextStyle(color: Colors.black),
       keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
       validator: (value) {},
       onSaved: (value) {
         heightEditingController.text = value!;
       },
-      textInputAction: TextInputAction.next,
+      textInputAction: TextInputAction.done,
       decoration: const InputDecoration(
         prefixIcon: Icon(
           Icons.height,
@@ -128,7 +128,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
       onSaved: (value) {
         caloriesEditingController.text = value!;
       },
-      textInputAction: TextInputAction.next,
+      textInputAction: TextInputAction.done,
       decoration: const InputDecoration(
         prefixIcon: Icon(
           Icons.food_bank,
@@ -337,8 +337,8 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
           body: Stack(
             children: [
               Positioned(
-                top: height * 0.02,
-                height: height * 0.78,
+                top: height * 0.005,
+                height: height * 0.815,
                 left: height * 0.005,
                 right: height * 0.005,
                 child: ClipRRect(
@@ -367,23 +367,44 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
                                     "Current weekly goal: ${currentWeeklyGoal}"),
                               ],
                             ),
-                            const SizedBox(height: 15),
+                            const SizedBox(height: 10),
                             caloriesField,
-                            const SizedBox(height: 15),
+                            const SizedBox(height: 10),
                             weightField,
-                            const SizedBox(height: 15),
+                            const SizedBox(height: 10),
                             heightField,
-                            const SizedBox(height: 15),
+                            const SizedBox(height: 10),
                             activityLevelField,
-                            const SizedBox(height: 15),
+                            const SizedBox(height: 10),
                             weeklyGoalField,
-                            const SizedBox(height: 15),
+                            const SizedBox(height: 10),
                             DatePickerWidget(
                                 color: Colors.black,
                                 userDate: '${loggedInUser.dob}',
                                 buttonColor: Colors.white,
-                                dob: birthEditingControler)
+                                dob: birthEditingControler),
+                            const SizedBox(height: 10),
+                                Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Activity level info",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        MaterialButton(
+                          child: Icon(Icons.info, color: Colors.black),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  _infoPopUpDialog(context),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                           ],
+                          
                         ),
                       ),
                     ),
@@ -406,7 +427,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
     loggedInUser.goal = goal == "" ? loggedInUser.goal : double.parse(goal);
 
     DateTime today = DateTime.now();
-    DateTime date = new DateFormat('dd-MM-yyyy').parse(dob);
+    DateTime date = DateFormat('dd-MM-yyyy').parse(dob);
 
     int age = (today.difference(date).inDays / 365).floor();
 
@@ -441,7 +462,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
         break;
     }
 
-    AMS = AMS - 1000 * double.parse(loggedInUser.goal.toString());
+    AMS = AMS + 1000 * double.parse(loggedInUser.goal.toString());
 
     int goalCalories =
         goalCaloriesSet == "" ? AMS.round() : int.parse(goalCaloriesSet);
@@ -478,4 +499,45 @@ List<DropdownMenuItem<String>> get weeklyGoal {
     DropdownMenuItem(child: Text("Gain 0,5 kg per week"), value: "0.5"),
   ];
   return weeklyGoalItems;
+}
+
+
+Widget _infoPopUpDialog(BuildContext context) {
+  return new AlertDialog(
+    title: const Text("Activity Level :"),
+    content: new Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Not Very Active - Sedentary ",
+          style: TextStyle(fontSize: 14),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "Lightly Active - 30 minutes of exercises",
+          style: TextStyle(fontSize: 14),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "Active - 1 hour and 45 minutes of exercises",
+          style: TextStyle(fontSize: 14),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "Very Active - 4 hours and 15 minutes of excercises",
+          style: TextStyle(fontSize: 14),
+        ),
+      ],
+    ),
+    actions: <Widget>[
+      new FlatButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        textColor: Theme.of(context).primaryColor,
+        child: const Text('Close'),
+      ),
+    ],
+  );
 }

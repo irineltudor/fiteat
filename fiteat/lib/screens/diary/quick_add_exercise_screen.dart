@@ -1,61 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fiteat/model/statistics.dart';
 import 'package:fiteat/model/user_model.dart';
 import 'package:fiteat/screens/home/home_screen.dart';
-import 'package:fiteat/screens/statistics/statistics_screen.dart';
 import 'package:fiteat/widget/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
 
-class AddProgressScreen extends StatefulWidget {
-  const AddProgressScreen({Key? key}) : super(key: key);
+class QuickAddExerciseScreen extends StatefulWidget {
+  const QuickAddExerciseScreen({Key? key}) : super(key: key);
 
   @override
-  _AddProgressScreenState createState() => _AddProgressScreenState();
+  _QuickAddExerciseScreenState createState() => _QuickAddExerciseScreenState();
 }
 
-class _AddProgressScreenState extends State<AddProgressScreen> {
+class _QuickAddExerciseScreenState extends State<QuickAddExerciseScreen> {
   final _auth = FirebaseAuth.instance;
-  User? user = FirebaseAuth.instance.currentUser;
-  UserModel loggedInUser = UserModel();
-  Statistics statistics = Statistics(date: [],weight: []);
 
   final _formKey = GlobalKey<FormState>();
 
-  final weightEditingController = TextEditingController();
+  final caloriesEditingController = TextEditingController();
 
   // string for displaying the error
   String? errorMessage;
-
-
-  @override
-  void initState() {
-    super.initState();
-    getData();
-  }
-
-  Future<void> getData() async {
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      loggedInUser = UserModel.fromMap(value.data());
-      setState(() {});
-    });
-
-    FirebaseFirestore.instance
-        .collection("statistics")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      statistics = Statistics.fromMap(value.data());
-      setState(() {});
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,35 +30,35 @@ class _AddProgressScreenState extends State<AddProgressScreen> {
     final width = MediaQuery.of(context).size.width;
 
     //first name field
-    final weightField = TextFormField(
+    final caloriesField = TextFormField(
       autofocus: false,
-      controller: weightEditingController,
+      controller: caloriesEditingController,
       style: const TextStyle(color: Colors.black),
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
       validator: (value) {
         RegExp regex = new RegExp(r'[+-]?([0-9]*[.])?[0-9]+');
         if (value!.isEmpty) {
-          return ("Current weight cannot be empty");
+          return ("Calories cannot be empty");
         }
 
         if (!regex.hasMatch(value)) {
-          return ("Enter a valid weight");
+          return ("Enter valid calories");
         }
 
         return null;
       },
       onSaved: (value) {
-        weightEditingController.text = value!;
+        caloriesEditingController.text = value!;
       },
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
         prefixIcon: Icon(
-          Icons.scale,
+          Icons.sports,
           color: Colors.black,
         ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: "Current weight",
+        hintText: "Calories burned",
         hintStyle: TextStyle(color: Colors.black),
         errorStyle: TextStyle(color: Colors.black),
         border: InputBorder.none,
@@ -108,11 +75,9 @@ class _AddProgressScreenState extends State<AddProgressScreen> {
         splashColor: Colors.white30,
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width / 4,
-        onPressed: () {
-          addProgressToDiary(weightEditingController.text);
-        },
+        onPressed: () {},
         child: const Text(
-          "Update",
+          "Add Quick Calories",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
@@ -123,14 +88,7 @@ class _AddProgressScreenState extends State<AddProgressScreen> {
       ),
     );
 
-      if (loggedInUser.uid == null || statistics.uid == null) {
-        return Container(
-          color: const Color(0xFFfc7b78),
-          child: const Center(
-              child: CircularProgressIndicator(
-            color: Colors.white,
-          )));
-      } else {
+
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 197, 201, 207),
               appBar: AppBar(
@@ -143,7 +101,7 @@ class _AddProgressScreenState extends State<AddProgressScreen> {
           },
         ),
         centerTitle: true,
-        title: const Text('Progress', style: TextStyle(color: Colors.white)),
+        title: const Text('Quick Add', style: TextStyle(color: Colors.white)),
       ),
               bottomNavigationBar: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
@@ -163,7 +121,7 @@ class _AddProgressScreenState extends State<AddProgressScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      weightField,
+                      caloriesField,
                     ],
                   ),
                 ),
@@ -171,38 +129,9 @@ class _AddProgressScreenState extends State<AddProgressScreen> {
             ),
           ),
         ));
-    }
   }
 
-
-
-  void addProgressToDiary(String weight) async {
-    DateTime today = DateTime.now();
-
-    statistics.date.add(DateFormat('dd-MM-yyyy').format(today));
-    statistics.weight.add(double.parse(weight));
-    statistics.uid = user!.uid;
-
-    loggedInUser.weight = double.parse(weight);
-
-
-
-    await FirebaseFirestore.instance
-        .collection("statistics")
-        .doc(user!.uid)
-        .set(statistics.toMap());
-
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .set(loggedInUser.toMap());
-    
-            Navigator.pushAndRemoveUntil(
-        (context),
-        MaterialPageRoute(builder: (context) => const StatisticsScreen()),
-        (route) => false);
-
-  }
+  postDetailsToFirestore() async {}
 }
 
 

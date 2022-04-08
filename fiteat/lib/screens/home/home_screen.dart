@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/model/diary.dart';
 import 'package:fiteat/screens/diary/dairy_screen.dart';
 import 'package:fiteat/screens/home/news_screen.dart';
 import 'package:fiteat/screens/more/more_screen.dart';
@@ -10,6 +11,7 @@ import 'package:fiteat/screens/statistics/statistics_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../model/news.dart';
 import '../../model/user_model.dart';
@@ -32,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   UserModel loggedInUser = UserModel();
   List<News> news = [];
   News oneNews = News();
+  Diary diary = Diary();
 
   @override
   void initState() {
@@ -61,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
           (new_news) => {
             oneNews = News (),
             oneNews = News.fromMap(new_news.data()),
+            news.add(oneNews),
             news.add(oneNews)
             
           }
@@ -68,12 +72,47 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {});
     });
 
+      FirebaseFirestore.instance
+      .collection("diary")
+      .doc(user!.uid)
+      .get()
+      .then((value) {
+      diary = Diary.fromMap(value.data());
+      setState(() {});
+    }).catchError((onError) => { print(onError.toString())});
+
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+
+
+
+
+    if(diary.food == null || loggedInUser.activitylevel == null)
+      return Container(
+        color: Color(0xFFfc7b78),
+        child: Center(child: CircularProgressIndicator(color: Colors.white,)));
+    else
+    {
+   int goalCalories = loggedInUser.goalcalories! + diary.exercise!.toInt();
+   int caloriesLeft = goalCalories - diary.food!.toInt();
+   caloriesLeft = caloriesLeft < 0 ? 0 : caloriesLeft;
+   int protein = ((goalCalories * 0.25)/4).toInt();
+   int carbs = ((goalCalories * 0.45)/4).toInt();
+   int fats = ((goalCalories * 0.3)/9).toInt();
+
+
+   int proteinLeft = protein - diary.protein!.toInt();
+   int carbsLeft = carbs - diary.carbs!.toInt();
+   int fatsLeft = fats - diary.fats!.toInt();
+
+  proteinLeft = proteinLeft < 0 ? 0 : proteinLeft;
+  carbsLeft = carbsLeft < 0 ? 0 : carbsLeft;
+  fatsLeft = fatsLeft < 0 ? 0 : fatsLeft;
+    
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 197, 201, 207),
       bottomNavigationBar: ClipRRect(
@@ -175,7 +214,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           _RadialProgress(
                             width: width * 0.3,
                             height: width * 0.3,
-                            progress: 0.7,
+                            progressProtein: diary.protein!.toInt()/protein,
+                            progressCarbs: diary.carbs!.toInt()/carbs,
+                            progressFats: diary.fats!.toInt()/fats,
+                            caloriesLeft: caloriesLeft,
                           ),
                           SizedBox(width: 10 ),
 
@@ -184,11 +226,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          _MacrosProgress(macro: "Protein", left: 40 , progress: 0.6, progressColor: Color.fromARGB(255, 60, 10, 177),width:width*0.3 ,),
+                          _MacrosProgress(macro: "Protein", left: proteinLeft , progress: diary.protein!/protein, progressColor: Color.fromARGB(255, 60, 10, 177),width:width*0.3 ,),
                           SizedBox(height: 10,),
-                          _MacrosProgress(macro: "Carbs", left: 100 , progress: 0.3, progressColor: Colors.green,width:width*0.3),
+                          _MacrosProgress(macro: "Carbs", left: carbsLeft , progress: diary.carbs!/carbs, progressColor: Colors.green,width:width*0.3),
                           SizedBox(height: 10,),
-                          _MacrosProgress(macro: "Fat", left: 20 , progress: 0.8, progressColor: Colors.yellow,width:width*0.3),
+                          _MacrosProgress(macro: "Fat", left: fatsLeft , progress: diary.fats!/fats, progressColor: Colors.yellow,width:width*0.3),
 
                         ],
                       )
@@ -243,18 +285,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+    }
   }
 }
 
 class _RadialProgress extends StatelessWidget {
-  final double height, width, progress;
+  final double height, width, progressProtein,progressCarbs,progressFats;
+  final int caloriesLeft;
 
-  const _RadialProgress({ Key? key,required this.height,required this.width ,required this.progress}) : super(key: key);
+  const _RadialProgress({ Key? key,required this.height,required this.width ,required this.progressProtein,required this.progressCarbs,required this.progressFats,required this.caloriesLeft}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: _RadialPainter(progressProtein:0.3,progressFats: 0.1,progressCarbs: 0.4),
+      painter: _RadialPainter(progressProtein:progressProtein * 0.25,progressFats: progressFats*0.3,progressCarbs: progressCarbs*0.45),
       child: Container(
         height: height,
         width: width,
@@ -262,7 +306,7 @@ class _RadialProgress extends StatelessWidget {
           child: RichText(
             textAlign: TextAlign.center,
             text: TextSpan(children: [
-              TextSpan(text: "531",
+              TextSpan(text: this.caloriesLeft.toString(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -340,6 +384,9 @@ class _MacrosProgress extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+
+    double currentProgress = progress <= 1.0 ? progress : 1.0;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -362,7 +409,7 @@ class _MacrosProgress extends StatelessWidget{
               ),
               Container(
                 height: 10,
-                width: width*progress,
+                width: width*currentProgress,
                 decoration: BoxDecoration(color:progressColor, borderRadius: BorderRadius.all(Radius.circular(8))),
                 
               ),

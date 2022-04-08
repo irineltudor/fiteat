@@ -45,7 +45,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
         .then((value) {
       loggedInUser = UserModel.fromMap(value.data());
       setState(() {
-        print(loggedInUser.height);
         if (loggedInUser.height != 0.0) {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const HomeScreen()));
@@ -68,7 +67,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       controller: weightEditingController,
       style: const TextStyle(color: Colors.white),
       keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
       validator: (value) {
         if (value!.isEmpty) {
           return ("Current weight cannot be empty");
@@ -102,7 +101,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       controller: heightEditingController,
       style: const TextStyle(color: Colors.white),
       keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
       validator: (value) {
         if (value!.isEmpty) {
           return ("Height cannot be empty");
@@ -271,7 +270,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
             side: const BorderSide(color: Colors.white)),
         minWidth: MediaQuery.of(context).size.width / 1.5,
         onPressed: () {
-          print("HERE : ${loggedInUser.email}");
           // Navigator.of(context).pushReplacement(
           //     MaterialPageRoute(builder: (context) => const HomeScreen()));
           updateDetails(weightEditingController.text, heightEditingController.text,genderEditingController.text,activityLevelEditingController.text,weeklyGoalEditingController.text,birthEditingController.text);
@@ -289,7 +287,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
 
 
-    if(loggedInUser.uid == null)
+    if(loggedInUser.uid == null || loggedInUser.height != 0.0)
       return Container(
         color: Color(0xFFfc7b78),
         child: Center(child: CircularProgressIndicator(color: Colors.white,)));
@@ -397,7 +395,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           break;
       }
 
-      AMS = AMS - 1000 * double.parse(goal);
+      AMS = AMS + 1000 * double.parse(goal);
 
       int goalCalories = AMS.round();
 

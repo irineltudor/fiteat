@@ -1,24 +1,26 @@
 class Food{
   String? name;
   String? additional;
-  int? calories;
-  int? protein;
-  int? carbs;
-  int? fat;
-  List<String>? serving_size;
+  double? calories;
+  double? protein;
+  double? carbs;
+  double? fat;
+  String? servingSize;
+  String? barcode;
 
-  Food({this.name,this.additional,this.calories,this.protein,this.carbs,this.fat,this.serving_size});
+  Food({this.name,this.additional,this.calories,this.protein,this.carbs,this.fat,this.servingSize,this.barcode});
 
   // data from server
   factory Food.fromMap(map){
     return Food(
       name: map['name'],
       additional : map['additional'],
-      calories: map['calories'],
-      protein: map['protein'],
-      carbs: map['carbs'],
-      fat : map['fat'],
-      serving_size : map['serving_size']
+      calories: map['calories'].toDouble(),
+      protein: map['protein'].toDouble(),
+      carbs: map['carbs'].toDouble(),
+      fat : map['fat'].toDouble(),
+      servingSize : map['servingSize'],
+      barcode : map['barcode']
     );
   }
 
@@ -31,7 +33,8 @@ class Food{
       'protein' : protein,
       'carbs' : carbs,
       'fat' : fat,
-      'serving_size' : serving_size
+      'servingSize' : servingSize,
+      'barcode' : barcode
     };
   }
 }

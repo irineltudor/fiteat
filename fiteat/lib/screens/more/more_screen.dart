@@ -7,6 +7,7 @@ import 'package:fiteat/screens/signup-signin/login_screen.dart';
 import 'package:fiteat/screens/statistics/statistics_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../../model/news.dart';
 import '../../model/user_model.dart';
@@ -52,7 +53,7 @@ class _MoreScreenState extends State<MoreScreen> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
-
+    FilePickerResult? result;
     final changePictureButton =  Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
@@ -63,7 +64,12 @@ class _MoreScreenState extends State<MoreScreen> {
             borderRadius: BorderRadius.circular(30),
             side: BorderSide(color: Colors.black)),
         minWidth: MediaQuery.of(context).size.width / 2  ,
-        onPressed: () =>{
+        onPressed: () async =>{
+          result = await FilePicker.platform.pickFiles(allowMultiple: false,type: FileType.custom,allowedExtensions: ['jpg']),
+          if(result == null){
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No file selected"),)),
+          }
+          
         },
         child: FittedBox(
             child: Text(

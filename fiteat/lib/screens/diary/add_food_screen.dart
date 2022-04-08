@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/screens/diary/create_food_screen.dart';
 import 'package:fiteat/screens/diary/dairy_screen.dart';
 import 'package:fiteat/screens/diary/food_screen.dart';
+import 'package:fiteat/screens/diary/quick_add_screen.dart';
 import 'package:fiteat/screens/signup-signin/login_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +32,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   final Storage storage = Storage();
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
-  List<Food> news = [];
-  Food food = Food();
+  List<Food> foods = [];
   String query = '';
 
   @override
@@ -52,10 +53,16 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
 
     FirebaseFirestore.instance
         .collection("food")
-        .doc("food-id")
         .get()
         .then((value) {
-      food = Food.fromMap(value.data());
+          Food food;
+            value.docs.forEach(
+              (db_food) => {
+              food = Food.fromMap(db_food.data()),
+              foods.add(food)
+
+              }
+            );
       setState(() {});
     });
   }
@@ -120,7 +127,12 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         color: Colors.white,
         elevation: 4,
         child: MaterialButton(
-          onPressed: () {},
+          onPressed: () {
+
+         //In order to use go back
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const QuickAddScreen()));
+          },
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           child: Column(
@@ -160,7 +172,11 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         splashColor: Colors.white30,
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width / 4,
-        onPressed: () {},
+        onPressed: () {
+           //In order to use go back
+          Navigator.push(context, MaterialPageRoute
+          (builder: (context) => CreateFoodScreen())); 
+        },
         child: const Text(
           "Create Food",
           textAlign: TextAlign.center,
@@ -173,6 +189,12 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       ),
     );
 
+    if(foods.isEmpty || loggedInUser.activitylevel == null)
+      return Container(
+        color: Color(0xFFfc7b78),
+        child: Center(child: CircularProgressIndicator(color: Colors.white,)));
+    else
+    {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 197, 201, 207),
       appBar: AppBar(
@@ -233,11 +255,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                 children: [
                   Expanded(
                       child: ListView.builder(
-                          itemCount: 10,
+                          itemCount: foods.length - 1,
                           itemBuilder: (context, index) {
-                            final newfood = food;
-
-                            return buildFood(food);
+                            return buildFood(foods[index + 1]);
                           })),
                 ],
               ),
@@ -246,6 +266,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         ],
       ),
     );
+    }
   }
 
   Widget buildSearch() {
@@ -259,11 +280,11 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       onPressed: () { 
                             //In order to use go back
           Navigator.push(context, MaterialPageRoute
-          (builder: (context) => FoodScreen(foodId: 'id'))); 
+          (builder: (context) => FoodScreen(foodId: food.barcode!))); 
        },
       child: ListTile(
-        title: Text('Food Name'),
-        subtitle: Text('Info'),
+        title: Text(food.name!),
+        subtitle: Text(food.additional!),
       ),
     );
   }

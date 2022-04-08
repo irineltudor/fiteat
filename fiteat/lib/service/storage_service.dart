@@ -40,9 +40,32 @@ class Storage{
   }
 
   Future<String> getProfilePicture(String uid) async{
-    uid = 'gj7L6cA6kxdPjioeuHCvxCDXoVH2';
     String imageUrl = 'user-profile/' + uid + '.png';
-    String downloadURL = await storage.ref(imageUrl).getDownloadURL();
+    String error = "";
+    String downloadURL = "";
+    try{
+    await storage.ref(imageUrl).getDownloadURL();
+    } on firebase_storage.FirebaseException catch(myError)
+    { 
+      switch (myError.code)
+      {
+        case 'object-not-found':
+        error = myError.toString();
+      }
+      
+
+    }
+    
+  if(error == "")
+  {
+    downloadURL= await storage.ref(imageUrl).getDownloadURL();
+  }
+  else{
+    
+    downloadURL = await storage.ref("user-profile/profile.png").getDownloadURL();
+
+  }
+
 
     return downloadURL;
   }

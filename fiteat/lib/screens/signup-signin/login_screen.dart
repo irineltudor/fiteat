@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiteat/screens/signup-signin/details_screen.dart';
 import 'package:fiteat/screens/home/home_screen.dart';
+import 'package:fiteat/screens/signup-signin/forgot_password_screen.dart';
 import 'package:fiteat/screens/signup-signin/registration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -150,7 +151,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     emailField,
                     const SizedBox(height: 20),
                     passwordField,
-                    const SizedBox(height: 45),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgotPasswordScreen()));
+                          },
+                          child: const Text(
+                            "Forgot password?",
+                            style: TextStyle(
+                              inherit: true,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black54,
+
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 35),
                     loginButton,
                     const SizedBox(height: 15),
                     Row(

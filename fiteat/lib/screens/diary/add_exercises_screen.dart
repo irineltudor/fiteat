@@ -2,8 +2,11 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/model/exercise.dart';
+import 'package:fiteat/screens/diary/create_exercise_screen.dart';
 import 'package:fiteat/screens/diary/dairy_screen.dart';
-import 'package:fiteat/screens/diary/excercise_screen.dart';
+import 'package:fiteat/screens/diary/exercise_screen.dart';
+import 'package:fiteat/screens/diary/quick_add_exercise_screen.dart';
 import 'package:fiteat/screens/signup-signin/login_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +33,7 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
   final Storage storage = Storage();
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
+  List<Exercise> exercises = [];
   String query = '';
 
   @override
@@ -45,6 +49,21 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
         .get()
         .then((value) {
       loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+
+    FirebaseFirestore.instance
+        .collection("exercises")
+        .get()
+        .then((value) {
+          Exercise exercise;
+            value.docs.forEach(
+              (db_exercise) => {
+              exercise = Exercise.fromMap(db_exercise.data()),
+              exercises.add(exercise)
+
+              }
+            );
       setState(() {});
     });
   }
@@ -65,7 +84,11 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
         color: Colors.white,
         elevation: 4,
         child: MaterialButton(
-          onPressed: () {},
+          onPressed: () {
+                     //In order to use go back
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const QuickAddExerciseScreen()));
+          },
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           child: Column(
@@ -98,14 +121,19 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
       ),
     );
 
-    final createFoodButton = Material(
+    final createExerciseButton = Material(
       elevation: 5,
       color: const Color(0xFFfc7b78),
       child: MaterialButton(
         splashColor: Colors.white30,
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width / 4,
-        onPressed: () {},
+        onPressed: () {
+
+                    //In order to use go back
+          Navigator.push(context, MaterialPageRoute
+          (builder: (context) => CreateExerciseScreen())); 
+        },
         child: const Text(
           "Create Exercise",
           textAlign: TextAlign.center,
@@ -118,6 +146,15 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
       ),
     );
 
+
+    if ( exercises.isEmpty || loggedInUser.activitylevel == null)
+      return Container(
+          color: Color(0xFFfc7b78),
+          child: Center(
+              child: CircularProgressIndicator(
+            color: Colors.white,
+          )));
+    else {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 197, 201, 207),
       appBar: AppBar(
@@ -134,7 +171,7 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
       ),
       bottomNavigationBar: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-          child: createFoodButton),
+          child: createExerciseButton),
       body: Stack(
         children: <Widget>[
           Positioned(
@@ -177,9 +214,10 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
                 children: [
                   Expanded(
                       child: ListView.builder(
-                          itemCount: 10,
+                          itemCount: exercises.length - 1,
                           itemBuilder: (context, index) {
-                            return buildExercise();
+
+                            return buildExercise(exercises[index + 1]);
                           })),
                 ],
               ),
@@ -188,6 +226,7 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
         ],
       ),
     );
+    }
   }
 
   Widget buildSearch() {
@@ -197,16 +236,15 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
         onChanged: searchExercise);
   }
 
-  Widget buildExercise() {
+  Widget buildExercise(Exercise exercise) {
     return MaterialButton(
       splashColor: Colors.grey,
       onPressed: () { 
                   Navigator.push(context, MaterialPageRoute
-          (builder: (context) => ExcerciseScreen()));
+          (builder: (context) => ExerciseScreen(exerciseId :exercise.id!)));
        },
       child: ListTile(
-        title: Text('Exercise Name'),
-        subtitle: Text('Info'),
+        title: Text(exercise.name!),
       ),
     );
   }
