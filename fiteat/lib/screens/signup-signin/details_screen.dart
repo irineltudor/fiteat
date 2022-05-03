@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/model/statistics.dart';
 import 'package:fiteat/model/user_model.dart';
 import 'package:fiteat/screens/home/home_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
@@ -401,7 +402,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
       loggedInUser.goalcalories = goalCalories;
 
+      Statistics statistics = Statistics(uid : loggedInUser.uid, date : [DateFormat('dd-MM-yyyy').format(DateTime.now())],weight: [double.parse(weight)]);
       firebaseFirestore.collection("users").doc(loggedInUser.uid).update(loggedInUser.toMap());
+      firebaseFirestore.collection("statistics").doc(loggedInUser.uid).set(statistics.toMap());
 
       Navigator.pushAndRemoveUntil(
           (context),

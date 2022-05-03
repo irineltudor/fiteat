@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
   List<News> news = [];
-  News oneNews = News();
+
   Diary diary = Diary();
 
   @override
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getData() async {
-        
+    News oneNews;
     FirebaseFirestore.instance
         .collection("users")
         .doc(user!.uid)
@@ -60,15 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
         .collection("news")
         .get()
         .then((value) {
-        value.docs.forEach(
-          (new_news) => {
-            oneNews = News (),
-            oneNews = News.fromMap(new_news.data()),
-            news.add(oneNews),
-            news.add(oneNews)
+        for (var newNews in value.docs) {
+            if(newNews.data().isNotEmpty)
+            {
+            oneNews = News.fromMap(newNews.data());
+            news.add(oneNews);
+            }
             
-          }
-        );
+          
+        }
       setState(() {});
     });
 
@@ -497,13 +497,13 @@ class _NewsCard extends StatelessWidget{
                         const SizedBox(
                           height: 10,
                         ),
-                        Text("${news.title} - ${news.type}", 
+                        Text("${news.title}", 
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 19,
                           color: Colors.black
                           ),),
-                        Text("${news.summary} this text is here just to help me for summary", 
+                        Text("${news.summary}", 
                         style: const TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 16,

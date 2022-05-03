@@ -69,14 +69,7 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
       setState(() {});
     });
 
-    FirebaseFirestore.instance
-        .collection("diary")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      diary = Diary.fromMap(value.data());
-      setState(() {});
-    });
+
   }
 
   @override
@@ -194,8 +187,8 @@ class _UpdateFoodScreenState extends State<UpdateFoodScreen> {
     );
 
     if (food.name == null ||
-        loggedInUser.activitylevel == null ||
-        diary.carbs == null)
+        loggedInUser.uid == null ||
+        diary.uid != null )
       return Container(
           color: Color(0xFFfc7b78),
           child: Center(

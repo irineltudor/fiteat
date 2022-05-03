@@ -7,6 +7,7 @@ import 'package:fiteat/screens/diary/dairy_screen.dart';
 import 'package:fiteat/screens/diary/food_screen.dart';
 import 'package:fiteat/screens/diary/quick_add_screen.dart';
 import 'package:fiteat/screens/signup-signin/login_screen.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:fiteat/service/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -32,7 +33,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   final Storage storage = Storage();
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
-  List<Food> foods = [];
+  List<Food> allFoods = [];
+  List<Food> searchedFoods = [];
   String query = '';
 
   @override
@@ -59,7 +61,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
             value.docs.forEach(
               (db_food) => {
               food = Food.fromMap(db_food.data()),
-              foods.add(food)
+              allFoods.add(food)
 
               }
             );
@@ -83,7 +85,29 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         color: Colors.white,
         elevation: 4,
         child: MaterialButton(
-          onPressed: () {},
+          onPressed: () async {
+
+          String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+                                                   "#ff6666", "Cancel", false, ScanMode.DEFAULT);
+          print(barcodeScanRes);
+
+
+          // remember i was here  app passed NULL surface
+          if(allFoods.where((element) => element.barcode == barcodeScanRes).toList().isNotEmpty )
+          {
+
+          Navigator.push(context, MaterialPageRoute
+          (builder: (context) => FoodScreen(foodId: barcodeScanRes)));
+
+          }
+          else{
+          Navigator.push(context, MaterialPageRoute
+          (builder: (context) => CreateFoodScreen(code: barcodeScanRes)));
+          }
+          
+
+
+          },
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           child: Column(
@@ -175,7 +199,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         onPressed: () {
            //In order to use go back
           Navigator.push(context, MaterialPageRoute
-          (builder: (context) => CreateFoodScreen())); 
+          (builder: (context) => CreateFoodScreen(code : ""))); 
         },
         child: const Text(
           "Create Food",
@@ -189,12 +213,16 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       ),
     );
 
-    if(foods.isEmpty || loggedInUser.activitylevel == null)
+    if( loggedInUser.activitylevel == null)
       return Container(
         color: Color(0xFFfc7b78),
         child: Center(child: CircularProgressIndicator(color: Colors.white,)));
     else
     {
+    if(query == '')
+    {
+          searchedFoods = allFoods;
+    }
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 197, 201, 207),
       appBar: AppBar(
@@ -203,7 +231,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.of(context).pop();
+                Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => const DiaryScreen()),
+        (route) => false);
           },
         ),
         centerTitle: true,
@@ -255,9 +286,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                 children: [
                   Expanded(
                       child: ListView.builder(
-                          itemCount: foods.length - 1,
+                          itemCount: searchedFoods.length,
                           itemBuilder: (context, index) {
-                            return buildFood(foods[index + 1]);
+                            return buildFood(searchedFoods[index]);
                           })),
                 ],
               ),
@@ -275,6 +306,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   }
 
   Widget buildFood(Food food) {
+    if(food.additional == 'quickAdd') {
+      return SizedBox.shrink();
+    }
     return MaterialButton(
       splashColor: Colors.grey,
       onPressed: () { 
@@ -289,5 +323,16 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     );
   }
 
-  void searchFood(String query) {}
+  void searchFood(String query) {
+    final searchFoods = allFoods.where((food){
+      final foodName = food.name!.toLowerCase();
+      final search = query.toLowerCase();
+      return foodName.contains(search);
+    }).toList();
+
+    setState(() {
+      this.query = query;
+      this.searchedFoods = searchFoods;
+    });
+  }
 }

@@ -5,14 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="18858cde-eff1-4be5-9e51-419e5acc81dd" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/login_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/registration_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/registration_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/diary/add_exercises_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/diary/add_exercises_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/diary/add_food_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/diary/add_food_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/diary/create_exercise_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/diary/create_exercise_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/diary/create_food_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/diary/create_food_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/diary/update_food_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/diary/update_food_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/more/change_goal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/more/change_goal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/signup-signin/details_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/signup-signin/details_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/lib/screens/signup-signin/registration_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/lib/screens/signup-signin/registration_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fiteat/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/fiteat/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -25,6 +41,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
@@ -38,5 +55,16 @@
       <updated>1645779614878</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

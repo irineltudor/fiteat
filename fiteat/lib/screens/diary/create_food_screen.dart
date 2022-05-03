@@ -11,17 +11,22 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
+import 'add_food_screen.dart';
+
 class CreateFoodScreen extends StatefulWidget {
-  const CreateFoodScreen({Key? key}) : super(key: key);
+  String code;
+  CreateFoodScreen({Key? key,required this.code}) : super(key: key);
 
   @override
-  _CreateFoodScreenState createState() => _CreateFoodScreenState();
+  _CreateFoodScreenState createState() => _CreateFoodScreenState(code : code);
 }
 
 class _CreateFoodScreenState extends State<CreateFoodScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
+  String code;
 
+  _CreateFoodScreenState({Key? key, required this.code});
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   final _formKey = GlobalKey<FormState>();
@@ -63,6 +68,10 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
+    if ( code != "" )
+    {
+      barcodeEditingController.text = code;
+    }
 
     final nameField = TextFormField(
       autofocus: false,
@@ -301,7 +310,7 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
       onSaved: (value) {
         barcodeEditingController.text = value!;
       },
-      textInputAction: TextInputAction.next,
+      textInputAction: TextInputAction.done,
       decoration: const InputDecoration(
         prefixIcon: Icon(
           Icons.qr_code,
@@ -378,37 +387,41 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
                 height: height * 0.815,
                 left: height * 0.005,
                 right: height * 0.005,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(45)),
-                  child: Container(
-                    color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(36),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            const SizedBox(height: 10),
-                            nameField,
-                            const SizedBox(height: 10),
-                            additionalField,
-                            const SizedBox(height: 10),
-                            caloriesField,
-                            const SizedBox(height: 10),
-                            proteinField,
-                            const SizedBox(height: 10),
-                            carbsField,
-                            const SizedBox(height: 10),
-                            fatField,
-                            const SizedBox(height: 10),
-                            servingSizeField,
-                            const SizedBox(height: 10),
-                            barCodeField
-                                
-                          ],
-                          
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(45)),
+                      child: Container(
+                        color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(36),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                const SizedBox(height: 10),
+                                nameField,
+                                const SizedBox(height: 10),
+                                additionalField,
+                                const SizedBox(height: 10),
+                                caloriesField,
+                                const SizedBox(height: 10),
+                                proteinField,
+                                const SizedBox(height: 10),
+                                carbsField,
+                                const SizedBox(height: 10),
+                                fatField,
+                                const SizedBox(height: 10),
+                                servingSizeField,
+                                const SizedBox(height: 10),
+                                barCodeField
+                                    
+                              ],
+                              
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -438,7 +451,10 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
 
 
 
-    Navigator.of(context).pop();
+        Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => const AddFoodScreen()),
+        (route) => false);
   }
 
 

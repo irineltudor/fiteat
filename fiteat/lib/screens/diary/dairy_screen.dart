@@ -7,6 +7,7 @@ import 'package:fiteat/model/exercise.dart';
 import 'package:fiteat/model/food.dart';
 import 'package:fiteat/screens/diary/add_exercises_screen.dart';
 import 'package:fiteat/screens/diary/add_food_screen.dart';
+import 'package:fiteat/screens/diary/diary_done.dart';
 import 'package:fiteat/screens/diary/update_exercise_screen.dart';
 import 'package:fiteat/screens/diary/update_food_screen.dart';
 import 'package:fiteat/screens/home/home_screen.dart';
@@ -178,6 +179,37 @@ class _DiaryScreenState extends State<DiaryScreen> {
           style: TextStyle(
             fontSize: 14,
             color: Colors.black87,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+
+
+      final finishButton = Material(
+      elevation: 5,
+      borderRadius: BorderRadius.circular(45),
+      color: Colors.green,
+      child: MaterialButton(
+        splashColor: Colors.blue,
+        padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+        minWidth: MediaQuery.of(context).size.width / 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        onPressed: () {
+          //In order to use go back
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DiaryDoneScreen(diary: diary)));
+        },
+        child: const Text(
+          "Finish",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -438,6 +470,8 @@ class _DiaryScreenState extends State<DiaryScreen> {
                             (BuildContext context, int index) {
                           if (breakfastFood.length != 0) {
                             final item = breakfastFood[index];
+                            if(item.food.barcode != "0")
+                            {
                             return Dismissible(
                               onDismissed: (direction) {
                                 // Remove the item from the data source.
@@ -512,6 +546,61 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                 ),
                               ),
                             );
+                            }
+                            else
+                            {
+                              return Dismissible(
+                              onDismissed: (direction) {
+                                
+                                  // Remove the item from the data source.
+                                  setState(() {
+                                    removeFood('breakfast', breakfastFood[index]);
+                                    breakfastFood.removeAt(index);
+                                  });
+                                  // Then show a snackbar.
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              '${item.food.name} deleted')));
+                                                   
+                                
+                              },
+                              background: slideLeftBackground(),
+                              key: Key(item.food.barcode.toString()),
+                              child: Container(
+                                color: Colors.white,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(item.food.name!),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: width * 0.5,
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text((item.food.calories! *
+                                                item.foodQuantity)
+                                            .toInt()
+                                            .toString()),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                            }
                           }
                         }, childCount: breakfastFood.length),
                       ),
@@ -540,6 +629,8 @@ class _DiaryScreenState extends State<DiaryScreen> {
                             (BuildContext context, int index) {
                           if (lunchFood.length != 0) {
                             final item = lunchFood[index];
+                            if(item.food.barcode != "0")
+                            {
                             return Dismissible(
                               onDismissed: (direction) {
                                 if (direction == DismissDirection.endToStart) {
@@ -612,6 +703,61 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                 ),
                               ),
                             );
+                            }
+                            else
+                            {
+                              return Dismissible(
+                              onDismissed: (direction) {
+                                
+                                  // Remove the item from the data source.
+                                  setState(() {
+                                    removeFood('lunch', lunchFood[index]);
+                                    lunchFood.removeAt(index);
+                                  });
+                                  // Then show a snackbar.
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              '${item.food.name} deleted')));
+                                                   
+                                
+                              },
+                              background: slideLeftBackground(),
+                              key: Key(item.food.barcode.toString()),
+                              child: Container(
+                                color: Colors.white,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(item.food.name!),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: width * 0.5,
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text((item.food.calories! *
+                                                item.foodQuantity)
+                                            .toInt()
+                                            .toString()),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                            }
                           }
                         }, childCount: lunchFood.length),
                       ),
@@ -640,6 +786,8 @@ class _DiaryScreenState extends State<DiaryScreen> {
                             (BuildContext context, int index) {
                           if (dinnerFood.isNotEmpty) {
                             final item = dinnerFood[index];
+                            if(item.food.barcode != "0")
+                            {
                             return Dismissible(
                               onDismissed: (direction) {
                                 if (direction == DismissDirection.endToStart) {
@@ -663,7 +811,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                                   foodQuantity:
                                                       item.foodQuantity,
                                                   meal: 'dinner')),
-                                      (route) => false);
+                                      (route) => false);                         
                                 }
                               },
                               background: slideRightBackground(),
@@ -712,6 +860,61 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                 ),
                               ),
                             );
+                            }
+                            else
+                            {
+                              return Dismissible(
+                              onDismissed: (direction) {
+                                
+                                  // Remove the item from the data source.
+                                  setState(() {
+                                    removeFood('dinner', dinnerFood[index]);
+                                    dinnerFood.removeAt(index);
+                                  });
+                                  // Then show a snackbar.
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              '${item.food.name} deleted')));
+                                                   
+                                
+                              },
+                              background: slideLeftBackground(),
+                              key: Key(item.food.barcode.toString()),
+                              child: Container(
+                                color: Colors.white,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(item.food.name!),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: width * 0.5,
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text((item.food.calories! *
+                                                item.foodQuantity)
+                                            .toInt()
+                                            .toString()),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                            }
                           }
                         }, childCount: dinnerFood.length),
                       ),
@@ -740,6 +943,8 @@ class _DiaryScreenState extends State<DiaryScreen> {
                             (BuildContext context, int index) {
                           if (exerciseDiary.length != 0) {
                             final item = exerciseDiary[index];
+                            if(item.exercise.id != "0")
+                            {
                             return Dismissible(
                               onDismissed: (direction) {
 
@@ -803,6 +1008,52 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                 ),
                               ),
                             );
+                            }
+                            else
+                            {
+                                                          return Dismissible(
+                              onDismissed: (direction) {
+                                // Remove the item from the data source.
+                                setState(() {
+                                  removeExercise(exerciseDiary[index]);
+                                  exerciseDiary.removeAt(index);
+                                });
+                                // Then show a snackbar.
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            '${item.exercise.name} deleted')));
+
+                              },
+                              background: slideLeftBackground(),
+                              key: Key(item.exercise.id!),
+                              child: Container(
+                                color: Colors.white,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(item.exercise.name!),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: width * 0.5,
+                                    ),
+                                    Text((item.exerciseTime *
+                                            (item.exercise.caloriesPerMinute! /
+                                                60))
+                                        .toInt()
+                                        .toString())
+                                  ],
+                                ),
+                              ),
+                            );
+                            }
                           }
                         }, childCount: exerciseDiary.length),
                       ),
@@ -947,9 +1198,13 @@ class _DiaryScreenState extends State<DiaryScreen> {
                   children: <Widget>[
                     addFoodButton,
                     SizedBox(
-                      width: 50,
+                      width: 10,
                     ),
-                    addExerciseButton
+                    addExerciseButton,
+                    SizedBox(
+                      width: 10,
+                    ),
+                    finishButton,
                   ]),
             )
           ],

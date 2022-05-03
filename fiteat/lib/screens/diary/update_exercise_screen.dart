@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiteat/model/diary.dart';
 import 'package:fiteat/model/exercise.dart';
 import 'package:fiteat/model/user_model.dart';
+import 'package:fiteat/screens/diary/add_exercises_screen.dart';
 import 'package:fiteat/screens/diary/dairy_screen.dart';
 import 'package:fiteat/screens/home/home_screen.dart';
 import 'package:fiteat/widget/date_picker_widget.dart';
@@ -151,7 +152,8 @@ class _UpdateExerciseScreenState extends State<UpdateExerciseScreen> {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.push(context, MaterialPageRoute
+          (builder: (context) => const DiaryScreen()));
               },
             ),
             centerTitle: true,

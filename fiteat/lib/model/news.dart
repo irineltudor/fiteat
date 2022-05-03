@@ -2,10 +2,11 @@ class News{
   String? type;
   String? title;
   String? summary;
-  String? information;
   String? image;
+  List<dynamic>? headings;
+  List<dynamic>? infoHeadings;
 
-  News({this.type,this.title,this.summary,this.information,this.image});
+  News({this.type,this.title,this.summary,this.image,required this.headings,required this.infoHeadings});
 
   // data from server
   factory News.fromMap(map){
@@ -13,8 +14,9 @@ class News{
       type: map['type'],
       title : map['title'],
       summary: map['summary'],
-      information: map['information'],
-      image: map['image']
+      image: map['image'],
+      headings: map['headings'],
+      infoHeadings: map['infoHeadings']
     );
   }
 
@@ -24,8 +26,9 @@ class News{
       'type': type,
       'title': title,
       'summary': summary,
-      'information': information,
-      'image': image
+      'image': image,
+      'headings' : headings,
+      'infoHeadings' : infoHeadings
     };
   }
 }

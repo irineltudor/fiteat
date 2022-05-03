@@ -8,7 +8,7 @@ class Statistics{
     return Statistics(
       uid: map['uid'],
       date: map['date'],
-      weight: map['weight']
+      weight: map['weight'],
 
     );
   }

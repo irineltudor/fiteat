@@ -55,10 +55,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       },
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
-        prefixIcon: Icon(Icons.person,color: Colors.white,),
+        prefixIcon: Icon(
+          Icons.person,
+          color: Colors.white,
+        ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "First Name",
-        hintStyle: TextStyle(color:Colors.white),
+        hintStyle: TextStyle(color: Colors.white),
         errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
@@ -90,10 +93,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       },
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
-        prefixIcon: Icon(Icons.person,color: Colors.white,),
+        prefixIcon: Icon(
+          Icons.person,
+          color: Colors.white,
+        ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Second Name",
-        hintStyle: TextStyle(color:Colors.white),
+        hintStyle: TextStyle(color: Colors.white),
         errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
@@ -125,10 +131,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       },
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
-        prefixIcon: Icon(Icons.mail,color: Colors.white,),
+        prefixIcon: Icon(
+          Icons.mail,
+          color: Colors.white,
+        ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Email",
-        hintStyle: TextStyle(color:Colors.white),
+        hintStyle: TextStyle(color: Colors.white),
         errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
@@ -160,10 +169,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       },
       textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
-        prefixIcon: Icon(Icons.vpn_key,color: Colors.white,),
+        prefixIcon: Icon(
+          Icons.vpn_key,
+          color: Colors.white,
+        ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Password",
-        hintStyle: TextStyle(color:Colors.white),
+        hintStyle: TextStyle(color: Colors.white),
         errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
@@ -191,10 +203,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       },
       textInputAction: TextInputAction.done,
       decoration: const InputDecoration(
-        prefixIcon: Icon(Icons.vpn_key,color: Colors.white,),
+        prefixIcon: Icon(
+          Icons.vpn_key,
+          color: Colors.white,
+        ),
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Confirm Password",
-        hintStyle: TextStyle(color:Colors.white),
+        hintStyle: TextStyle(color: Colors.white),
         errorStyle: TextStyle(color: Colors.white),
         border: InputBorder.none,
         focusedBorder: OutlineInputBorder(
@@ -342,45 +357,49 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     userModel.goal = 0.0;
     userModel.goalcalories = 0;
 
-
     await firebaseFirestore
         .collection("users")
         .doc(user.uid)
         .set(userModel.toMap());
     Fluttertoast.showToast(msg: "Account created succesfully :) ");
 
+    String uid = user.uid;
+    double exercise = 0;
+    double food = 0;
+    double fats = 0;
+    double carbs = 0;
+    double protein = 0;
+    LinkedHashMap<String, double> exercises = LinkedHashMap();
 
-  String uid = user.uid;
-  double exercise = 0;
-  double food = 0;
-  double fats = 0;
-  double carbs = 0;
-  double protein = 0;
-  LinkedHashMap<String, double> exercises = LinkedHashMap();
-  
-  LinkedHashMap<String, double> breakfast = LinkedHashMap();
-  LinkedHashMap<String, double> lunch = LinkedHashMap();
-  LinkedHashMap<String, double> dinner = LinkedHashMap();
-  LinkedHashMap<String, LinkedHashMap<String, double>> meals = LinkedHashMap();
+    LinkedHashMap<String, double> breakfast = LinkedHashMap();
+    LinkedHashMap<String, double> lunch = LinkedHashMap();
+    LinkedHashMap<String, double> dinner = LinkedHashMap();
+    LinkedHashMap<String, LinkedHashMap<String, double>> meals =
+        LinkedHashMap();
 
-  meals['breakfast'] = breakfast;
-  meals['lunch'] = lunch;
-  meals['dinner'] = dinner;
+    meals['breakfast'] = breakfast;
+    meals['lunch'] = lunch;
+    meals['dinner'] = dinner;
 
+    Diary diary = Diary(
+        uid: uid,
+        exercise: exercise,
+        food: food,
+        fats: fats,
+        carbs: carbs,
+        protein: protein,
+        exercises: exercises,
+        meals: meals);
 
-  Diary diary = Diary(uid : uid ,exercise: exercise , food: food , fats: fats , carbs: carbs,protein: protein,exercises: exercises,meals: meals);
-
-
-  await firebaseFirestore.collection('diary').doc(uid).set(diary.toMap()).then((value) => Fluttertoast.showToast(msg: "Diary Created"));
-
-
-
+    await firebaseFirestore
+        .collection('diary')
+        .doc(uid)
+        .set(diary.toMap())
+        .then((value) => Fluttertoast.showToast(msg: "Diary Created"));
 
     Navigator.pushAndRemoveUntil(
         (context),
         MaterialPageRoute(builder: (context) => const DetailsScreen()),
         (route) => false);
-
-    
   }
 }

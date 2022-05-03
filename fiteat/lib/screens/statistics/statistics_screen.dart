@@ -97,6 +97,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             color: Colors.white,
           )));
     } else {
+      var initialWeight = statistics.weight[0].toDouble();
+      var currentWeight = statistics.weight[statistics.weight.length-1].toDouble();
+      var progressWeight = currentWeight - initialWeight;
+
+      Color progressColor = progressWeight < 0 ? Colors.orange : Colors.blue ;
+      String progress = progressWeight < 0 ? progressWeight.toString() : "+${progressWeight}";
       return Scaffold(
         backgroundColor: const Color.fromARGB(255, 197, 201, 207),
         appBar: AppBar(
@@ -164,6 +170,24 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Progress : ",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                           Text(
+                              " ${progress}",
+                              style: TextStyle(
+                                color:progressColor,
+                                fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Text(
                           "Your weight",
                           style: TextStyle(fontWeight: FontWeight.bold),
@@ -171,6 +195,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         SizedBox(
                           height: 20,
                         ),
+
                         Expanded(
                           child: charts.TimeSeriesChart(
                             _getWeightData(),
@@ -202,10 +227,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     for (int i = 0; i < statistics.weight.length; i++) {
       WeightData newData = WeightData(
           DateFormat('dd-MM-yyyy').parse(statistics.date[i]),
-          statistics.weight[i]);
-
+          statistics.weight[i].toDouble());
       data.add(newData);
     }
+
+    
 
     List<charts.Series<WeightData, DateTime>> series = [
       charts.Series(

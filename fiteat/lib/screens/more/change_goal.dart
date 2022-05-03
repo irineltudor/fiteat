@@ -1,7 +1,10 @@
+// ignore_for_file: unnecessary_const, deprecated_member_use
+
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/model/statistics.dart';
 import 'package:fiteat/model/user_model.dart';
 import 'package:fiteat/screens/home/home_screen.dart';
 import 'package:fiteat/widget/date_picker_widget.dart';
@@ -20,6 +23,7 @@ class ChangeGoalScreen extends StatefulWidget {
 class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
+  Statistics statistics = Statistics(date: [],weight: []);
 
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
@@ -51,6 +55,15 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
         .then((value) {
       loggedInUser = UserModel.fromMap(value.data());
       birthEditingControler.text = loggedInUser.dob.toString();
+      setState(() {});
+    });
+
+        FirebaseFirestore.instance
+        .collection("statistics")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      statistics = Statistics.fromMap(value.data());
       setState(() {});
     });
   }
@@ -123,7 +136,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
       controller: caloriesEditingController,
       style: const TextStyle(color: Colors.black),
       keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
       validator: (value) {},
       onSaved: (value) {
         caloriesEditingController.text = value!;
@@ -151,7 +164,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
     //activityLevel field
     final activityLevelField =
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(
+      const Text(
         "Activity Level ",
         style: TextStyle(color: Colors.black, fontSize: 16),
       ),
@@ -160,15 +173,15 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
           child: DropdownButtonFormField(
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1),
+                  borderSide: const BorderSide(color: Colors.black, width: 1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 filled: true,
@@ -191,24 +204,24 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
     //weeklyGoal field
     final weeklyGoalField =
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(
+      const Text(
         "Weekly Goal ",
-        style: TextStyle(color: Colors.black, fontSize: 16),
+        style: const TextStyle(color: Colors.black, fontSize: 16),
       ),
       SizedBox(
           width: width * 0.51,
           child: DropdownButtonFormField(
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1),
+                  borderSide: const BorderSide(color: Colors.black, width: 1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 filled: true,
@@ -308,14 +321,14 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
         break;
     }
 
-    if (loggedInUser.dob == null)
+    if (loggedInUser.dob == null || statistics.uid == null) {
       return Container(
-          color: Color(0xFFfc7b78),
-          child: Center(
+          color: const Color(0xFFfc7b78),
+          child: const Center(
               child: CircularProgressIndicator(
             color: Colors.white,
           )));
-    else
+    } else {
       return Scaffold(
           backgroundColor: const Color.fromARGB(255, 197, 201, 207),
           appBar: AppBar(
@@ -342,7 +355,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
                 left: height * 0.005,
                 right: height * 0.005,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(45)),
+                  borderRadius: const BorderRadius.all(const Radius.circular(45)),
                   child: Container(
                     color: Colors.white,
                     child: Padding(
@@ -387,12 +400,12 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
                                 Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "Activity level info",
                           style: TextStyle(color: Colors.black),
                         ),
                         MaterialButton(
-                          child: Icon(Icons.info, color: Colors.black),
+                          child: const Icon(Icons.info, color: Colors.black),
                           onPressed: () {
                             showDialog(
                               context: context,
@@ -413,6 +426,7 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
               ),
             ],
           ));
+    }
   }
 
   void updateDetails(String weight, String height, String activitylevel,
@@ -464,51 +478,80 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
 
     AMS = AMS + 1000 * double.parse(loggedInUser.goal.toString());
 
-    int goalCalories =
-        goalCaloriesSet == "" ? AMS.round() : int.parse(goalCaloriesSet);
+    num goalCalories =
+        goalCaloriesSet == "" ? AMS.round() : double.parse(goalCaloriesSet.toString());
 
-    loggedInUser.goalcalories = goalCalories;
+    loggedInUser.goalcalories = goalCalories.toInt();
 
     firebaseFirestore
         .collection("users")
         .doc(loggedInUser.uid)
-        .update(loggedInUser.toMap());
+        .update(loggedInUser.toMap())
+        .then((value) => Fluttertoast.showToast(msg : "Changes were updated"));
+
+    if(weight != "")
+    {
+    addProgressToDiary(weight);
+    }
 
     setState(() {});
+  }
+
+    void addProgressToDiary(String weight) async {
+    DateTime today = DateTime.now();
+
+    statistics.date.add(DateFormat('dd-MM-yyyy').format(today));
+    statistics.weight.add(double.parse(weight));
+    statistics.uid = user!.uid;
+
+    loggedInUser.weight = double.parse(weight);
+
+
+
+    await FirebaseFirestore.instance
+        .collection("statistics")
+        .doc(user!.uid)
+        .set(statistics.toMap());
+
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .set(loggedInUser.toMap());
+
   }
 }
 
 List<DropdownMenuItem<String>> get activityLevel {
   List<DropdownMenuItem<String>> activityLevelItems = [
-    DropdownMenuItem(child: Text("Not Very Active"), value: "0"),
-    DropdownMenuItem(child: Text("Lightly Active"), value: "1"),
-    DropdownMenuItem(child: Text("Active"), value: "2"),
-    DropdownMenuItem(child: Text("Very Active"), value: "3"),
+    const DropdownMenuItem(child: Text("Not Very Active"), value: "0"),
+    const DropdownMenuItem(child: Text("Lightly Active"), value: "1"),
+    const DropdownMenuItem(child: Text("Active"), value: "2"),
+    const DropdownMenuItem(child: Text("Very Active"), value: "3"),
   ];
   return activityLevelItems;
 }
 
 List<DropdownMenuItem<String>> get weeklyGoal {
   List<DropdownMenuItem<String>> weeklyGoalItems = [
-    DropdownMenuItem(child: Text("Lose 0,2 kg per week"), value: "-0.2"),
-    DropdownMenuItem(child: Text("Lose 0,5 kg per week"), value: "-0.5"),
-    DropdownMenuItem(child: Text("Lose 0,8 kg per week"), value: "-0.8"),
-    DropdownMenuItem(child: Text("Lose 1 kg per week"), value: "-1"),
-    DropdownMenuItem(child: Text("Maintain weight"), value: "0"),
-    DropdownMenuItem(child: Text("Gain 0,2 kg per week"), value: "0.2"),
-    DropdownMenuItem(child: Text("Gain 0,5 kg per week"), value: "0.5"),
+    const DropdownMenuItem(child: Text("Lose 0,2 kg per week"), value: "-0.2"),
+    const DropdownMenuItem(child: Text("Lose 0,5 kg per week"), value: "-0.5"),
+    const DropdownMenuItem(child: Text("Lose 0,8 kg per week"), value: "-0.8"),
+    const DropdownMenuItem(child: Text("Lose 1 kg per week"), value: "-1"),
+    const DropdownMenuItem(child: Text("Maintain weight"), value: "0"),
+    const DropdownMenuItem(child: Text("Gain 0,2 kg per week"), value: "0.2"),
+    const DropdownMenuItem(child: Text("Gain 0,5 kg per week"), value: "0.5"),
   ];
   return weeklyGoalItems;
 }
 
 
 Widget _infoPopUpDialog(BuildContext context) {
-  return new AlertDialog(
+  return AlertDialog(
     title: const Text("Activity Level :"),
-    content: new Column(
+    content: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: const <Widget>[
         Text(
           "Not Very Active - Sedentary ",
           style: TextStyle(fontSize: 14),
@@ -531,7 +574,7 @@ Widget _infoPopUpDialog(BuildContext context) {
       ],
     ),
     actions: <Widget>[
-      new FlatButton(
+      FlatButton(
         onPressed: () {
           Navigator.of(context).pop();
         },

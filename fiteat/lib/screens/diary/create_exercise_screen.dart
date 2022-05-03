@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiteat/model/exercise.dart';
 import 'package:fiteat/model/food.dart';
 import 'package:fiteat/model/user_model.dart';
+import 'package:fiteat/screens/diary/add_exercises_screen.dart';
 import 'package:fiteat/screens/home/home_screen.dart';
 import 'package:fiteat/widget/date_picker_widget.dart';
 import 'package:flutter/material.dart';
@@ -224,7 +225,10 @@ class _CreateExerciseScreenState extends State<CreateExerciseScreen> {
     firebaseFirestore.collection('exercises').doc(id).set(exercise.toMap())}
     );
     
-    Navigator.of(context).pop();
+        Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => const AddExercisesScreen()),
+        (route) => false);
   
     
     }

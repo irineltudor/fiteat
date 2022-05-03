@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiteat/model/diary.dart';
 import 'package:fiteat/model/exercise.dart';
 import 'package:fiteat/screens/diary/create_exercise_screen.dart';
 import 'package:fiteat/screens/diary/dairy_screen.dart';
@@ -34,6 +35,7 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
   List<Exercise> exercises = [];
+  List<Exercise> searchedExercises = [];
   String query = '';
 
   @override
@@ -155,6 +157,10 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
             color: Colors.white,
           )));
     else {
+      if(query == '')
+      {
+        searchedExercises = exercises;
+      }
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 197, 201, 207),
       appBar: AppBar(
@@ -163,7 +169,10 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.of(context).pop();
+               Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => const DiaryScreen()),
+        (route) => false);
           },
         ),
         centerTitle: true,
@@ -214,12 +223,12 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
                 children: [
                   Expanded(
                       child: ListView.builder(
-                          itemCount: exercises.length - 1,
+                          itemCount: searchedExercises.length,
                           itemBuilder: (context, index) {
 
-                            return buildExercise(exercises[index + 1]);
+                            return buildExercise(searchedExercises[index]);
                           })),
-                ],
+                ]
               ),
             ),
           )
@@ -237,6 +246,10 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
   }
 
   Widget buildExercise(Exercise exercise) {
+    if(exercise.name =='quickAdd')
+    {
+      return SizedBox.shrink();
+    }
     return MaterialButton(
       splashColor: Colors.grey,
       onPressed: () { 
@@ -249,5 +262,24 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
     );
   }
 
-  void searchExercise(String query) {}
+  void searchExercise(String query) {
+    final search = exercises.where((element){
+     final exerciseName = element.name!.toLowerCase();
+     final search = query.toLowerCase();
+
+        print('Search : $search');
+        print('Search : $exerciseName');
+        print('Search : ${exerciseName.contains(search).toString()}');
+
+     return exerciseName.contains(search);
+  } 
+    ).toList();
+
+
+    setState((){
+      this.query = query;
+      searchedExercises = search;
+    });
+
+  }
 }

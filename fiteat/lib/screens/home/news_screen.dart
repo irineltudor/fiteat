@@ -13,6 +13,9 @@ class NewsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+
+    final headings = news.headings;
+    final infoHeadings = news.infoHeadings; 
     return Scaffold(
         backgroundColor: Colors.white,
         body: CustomScrollView(
@@ -22,7 +25,7 @@ class NewsScreen extends StatelessWidget {
             floating: true,
             backgroundColor: const Color(0xFFfc7b78),
             expandedHeight: 200,
-            iconTheme: IconThemeData(color: Colors.black38,size: 25),
+            iconTheme: IconThemeData(color: Colors.redAccent,size: 25),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(40))),
             flexibleSpace: FlexibleSpaceBar(
               background: ClipRRect(
@@ -72,7 +75,7 @@ class NewsScreen extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(
-                    '${news.summary}',
+                    '${news.type}',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
@@ -94,7 +97,7 @@ class NewsScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    "About",
+                    "Summary",
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 14,
@@ -105,7 +108,7 @@ class NewsScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 16, right: 16, bottom: 32),
                   child: Text(
-                    "${news.information}",
+                    "${news.summary}",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -115,6 +118,48 @@ class NewsScreen extends StatelessWidget {
                 ]
           )
           ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+     
+                if(index < headings!.length){
+                  
+                final title = headings[index];
+                final info = infoHeadings?[index];
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
+                      color: Colors.blueGrey,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 32),
+                  child: Text(
+                    info,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                  ],
+                );
+                }
+              }
+            ),)
            
         ]
     ));
