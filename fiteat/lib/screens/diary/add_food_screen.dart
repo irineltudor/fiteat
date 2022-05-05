@@ -6,6 +6,7 @@ import 'package:fiteat/screens/diary/create_food_screen.dart';
 import 'package:fiteat/screens/diary/dairy_screen.dart';
 import 'package:fiteat/screens/diary/food_screen.dart';
 import 'package:fiteat/screens/diary/quick_add_screen.dart';
+import 'package:fiteat/screens/diary/take_a_photo_screen.dart';
 import 'package:fiteat/screens/signup-signin/login_screen.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:fiteat/service/storage_service.dart';
@@ -90,8 +91,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
                                                    "#ff6666", "Cancel", false, ScanMode.DEFAULT);
           print(barcodeScanRes);
-
-
+          if(barcodeScanRes != "-1")
+          {
           // remember i was here  app passed NULL surface
           if(allFoods.where((element) => element.barcode == barcodeScanRes).toList().isNotEmpty )
           {
@@ -104,6 +105,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           Navigator.push(context, MaterialPageRoute
           (builder: (context) => CreateFoodScreen(code: barcodeScanRes)));
           }
+          }
           
 
 
@@ -113,13 +115,13 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
+              children: const <Widget>[
                 SizedBox(
                   height: 15,
                 ),
                 Icon(
                   Icons.qr_code_scanner_rounded,
-                  color: const Color(0xFFfc7b78),
+                  color: Color(0xFFfc7b78),
                   size: 35,
                 ),
                 SizedBox(
@@ -127,10 +129,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                 ),
                 Text(
                   "Scan Barcode",
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 16,
-                      color: const Color(0xFFfc7b78)),
+                      color: Color(0xFFfc7b78)),
                 ),
                 SizedBox(
                   height: 15,
@@ -162,13 +164,13 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
+              children: const <Widget>[
                 SizedBox(
                   height: 15,
                 ),
                 Icon(
                   Icons.fast_forward_rounded,
-                  color: const Color(0xFFfc7b78),
+                  color: Color(0xFFfc7b78),
                   size: 35,
                 ),
                 SizedBox(
@@ -176,10 +178,60 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                 ),
                 Text(
                   "Quick Add",
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 16,
-                      color: const Color(0xFFfc7b78)),
+                      color: Color(0xFFfc7b78)),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+              ]),
+        ),
+      ),
+    );
+
+
+    final takeAPhoto = Container(
+      width: width * 0.4,
+      margin: const EdgeInsets.only(
+        right: 20,
+        bottom: 10,
+      ),
+      child: Material(
+        borderRadius: BorderRadius.all(Radius.circular(30)),
+        color: Colors.white,
+        elevation: 4,
+        child: MaterialButton(
+          onPressed: () {
+
+         //In order to use go back
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const TakeAPhotoScreen()));
+          },
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: const <Widget>[
+                SizedBox(
+                  height: 15,
+                ),
+                Icon(
+                  Icons.camera,
+                  color: Color(0xFFfc7b78),
+                  size: 35,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "Take a Photo",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      color: Color(0xFFfc7b78)),
                 ),
                 SizedBox(
                   height: 15,
@@ -271,8 +323,20 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                   SizedBox(
                     width: width * 0.05,
                   ),
-                  scanBarcode,
-                  quickAdd
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                        child : Row(
+                          children: [
+                            scanBarcode,
+                            quickAdd,
+                            takeAPhoto,
+                          ],
+                        ),
+                      
+                    ),
+                  )
+
                 ],
               )),
           Positioned(
