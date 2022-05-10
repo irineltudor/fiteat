@@ -505,44 +505,51 @@ class _DiaryScreenState extends State<DiaryScreen> {
                               key: Key(item.food.barcode.toString()),
                               child: Container(
                                 color: Colors.white,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
                                         Text(item.food.name!),
-                                        Text(
-                                          '${item.food.additional}, ${item.food.servingSize}',
-                                          style:
-                                              TextStyle(color: Colors.black45),
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.5,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text((item.food.calories! *
-                                                item.foodQuantity)
-                                            .toInt()
-                                            .toString()),
-                                        Text(
-                                          '${(item.foodQuantity * 100).toStringAsFixed(1)}g',
-                                          style:
-                                              TextStyle(color: Colors.black45),
-                                        )
-                                      ],
-                                    )
-                                  ],
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Align(
+                                        alignment : Alignment.centerLeft,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(item.food.name!),
+                                            Text(
+                                              '${item.food.additional}, ${item.food.servingSize}',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment : Alignment.centerRight,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text((item.food.calories! *
+                                                    item.foodQuantity)
+                                                .toInt()
+                                                .toString()),
+                                            Text(
+                                              '${(item.foodQuantity).toStringAsFixed(1)}x',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -569,34 +576,50 @@ class _DiaryScreenState extends State<DiaryScreen> {
                               key: Key(item.food.barcode.toString()),
                               child: Container(
                                 color: Colors.white,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(item.food.name!),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.5,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text((item.food.calories! *
-                                                item.foodQuantity)
-                                            .toInt()
-                                            .toString()),
-                                      ],
-                                    )
-                                  ],
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Align(
+                                        alignment : Alignment.centerLeft,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(item.food.name!),
+                                            Text(
+                                              '${item.food.servingSize}',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment : Alignment.centerRight,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text((item.food.calories! *
+                                                    item.foodQuantity)
+                                                .toInt()
+                                                .toString()),
+                                            Text(
+                                              '${(item.foodQuantity).toStringAsFixed(0)} ',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -662,44 +685,50 @@ class _DiaryScreenState extends State<DiaryScreen> {
                               key: Key(item.food.barcode.toString()),
                               child: Container(
                                 color: Colors.white,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(item.food.name!),
-                                        Text(
-                                          '${item.food.additional}, ${item.food.servingSize}',
-                                          style:
-                                              TextStyle(color: Colors.black45),
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.5,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text((item.food.calories! *
-                                                item.foodQuantity)
-                                            .toInt()
-                                            .toString()),
-                                        Text(
-                                          '${(item.foodQuantity * 100).toStringAsFixed(1)}g',
-                                          style:
-                                              TextStyle(color: Colors.black45),
-                                        )
-                                      ],
-                                    )
-                                  ],
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Align(
+                                        alignment : Alignment.centerLeft,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(item.food.name!),
+                                            Text(
+                                              '${item.food.additional}, ${item.food.servingSize}',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment : Alignment.centerRight,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text((item.food.calories! *
+                                                    item.foodQuantity)
+                                                .toInt()
+                                                .toString()),
+                                            Text(
+                                              '${(item.foodQuantity).toStringAsFixed(1)}x',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -726,34 +755,50 @@ class _DiaryScreenState extends State<DiaryScreen> {
                               key: Key(item.food.barcode.toString()),
                               child: Container(
                                 color: Colors.white,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(item.food.name!),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.5,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text((item.food.calories! *
-                                                item.foodQuantity)
-                                            .toInt()
-                                            .toString()),
-                                      ],
-                                    )
-                                  ],
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Align(
+                                        alignment : Alignment.centerLeft,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(item.food.name!),
+                                            Text(
+                                              '${item.food.servingSize}',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment : Alignment.centerRight,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text((item.food.calories! *
+                                                    item.foodQuantity)
+                                                .toInt()
+                                                .toString()),
+                                            Text(
+                                              '${(item.foodQuantity).toStringAsFixed(0)} ',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -819,44 +864,50 @@ class _DiaryScreenState extends State<DiaryScreen> {
                               key: Key(item.food.barcode.toString()),
                               child: Container(
                                 color: Colors.white,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(item.food.name!),
-                                        Text(
-                                          '${item.food.additional}, ${item.food.servingSize}',
-                                          style:
-                                              TextStyle(color: Colors.black45),
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.5,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text((item.food.calories! *
-                                                item.foodQuantity)
-                                            .toInt()
-                                            .toString()),
-                                        Text(
-                                          '${(item.foodQuantity * 100).toStringAsFixed(1)}g',
-                                          style:
-                                              TextStyle(color: Colors.black45),
-                                        )
-                                      ],
-                                    )
-                                  ],
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Align(
+                                        alignment : Alignment.centerLeft,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(item.food.name!),
+                                            Text(
+                                              '${item.food.additional}, ${item.food.servingSize}',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment : Alignment.centerRight,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text((item.food.calories! *
+                                                    item.foodQuantity)
+                                                .toInt()
+                                                .toString()),
+                                            Text(
+                                              '${(item.foodQuantity).toStringAsFixed(1)}x',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -883,34 +934,50 @@ class _DiaryScreenState extends State<DiaryScreen> {
                               key: Key(item.food.barcode.toString()),
                               child: Container(
                                 color: Colors.white,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(item.food.name!),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      width: width * 0.5,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text((item.food.calories! *
-                                                item.foodQuantity)
-                                            .toInt()
-                                            .toString()),
-                                      ],
-                                    )
-                                  ],
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Align(
+                                        alignment : Alignment.centerLeft,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(item.food.name!),
+                                            Text(
+                                              '${item.food.servingSize}',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment : Alignment.centerRight,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text((item.food.calories! *
+                                                    item.foodQuantity)
+                                                .toInt()
+                                                .toString()),
+                                            Text(
+                                              '${(item.foodQuantity).toStringAsFixed(0)} ',
+                                              style:
+                                                  TextStyle(color: Colors.black45),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
