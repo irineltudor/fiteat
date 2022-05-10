@@ -2,6 +2,11 @@
 
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
+import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
+import 'package:fiteat/screens/diary/food_screen.dart';
+import 'package:image/image.dart' as Img;
 import 'package:fiteat/screens/more/more_screen.dart';
 import 'package:fiteat/service/storage_service.dart';
 import 'package:flutter/widgets.dart';
@@ -19,6 +24,10 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
+import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
+
+import '../../model/food.dart';
 
 class TakeAPhotoScreen extends StatefulWidget{
   const TakeAPhotoScreen({Key? key}) : super(key: key);
@@ -29,10 +38,10 @@ class TakeAPhotoScreen extends StatefulWidget{
 
 class _CaptureImageState extends State<TakeAPhotoScreen>{
 
-  File? _profilePicture;
+  File? _foodPhoto;
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
-  Statistics statistics = Statistics(date: [],weight: []);
+  List<Food> allFoods = [];
 
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
@@ -51,6 +60,22 @@ class _CaptureImageState extends State<TakeAPhotoScreen>{
       loggedInUser = UserModel.fromMap(value.data());
       setState(() {});
     });
+
+        FirebaseFirestore.instance
+        .collection("food")
+        .get()
+        .then((value) {
+          Food food;
+            value.docs.forEach(
+              (db_food) => {
+              food = Food.fromMap(db_food.data()),
+              allFoods.add(food)
+
+              }
+            );
+      setState(() {});
+    });
+
   }
 
 
@@ -59,23 +84,23 @@ class _CaptureImageState extends State<TakeAPhotoScreen>{
 
     setState((){
       if(selected != null)
-      _profilePicture = File(selected.path);
+      _foodPhoto = File(selected.path);
     });
 
   }
 
   void _clear(){
-    setState(()=> _profilePicture = null );
+    setState(()=> _foodPhoto = null );
   }
 
   Future<void> _cropImage() async{
     File? croppedImage = await ImageCropper().cropImage(
-      sourcePath: _profilePicture!.path,
+      sourcePath: _foodPhoto!.path,
       compressFormat: ImageCompressFormat.png
     );
 
     setState(() {
-      _profilePicture = croppedImage ?? _profilePicture;
+      _foodPhoto = croppedImage ?? _foodPhoto;
     });
   }
 
@@ -99,7 +124,7 @@ class _CaptureImageState extends State<TakeAPhotoScreen>{
           onPressed: () => _pickImage(ImageSource.gallery,),)
     ],));
 
-    if (loggedInUser.dob == null) {
+    if (loggedInUser.dob == null || allFoods.isEmpty ) {
       return Container(
           color: const Color(0xFFfc7b78),
           child: const Center(
@@ -138,8 +163,8 @@ class _CaptureImageState extends State<TakeAPhotoScreen>{
                     color:Colors.white,
                     child: ListView(
                       children: [
-                        if(_profilePicture != null) ... [
-                          Image.file(_profilePicture!),
+                        if(_foodPhoto != null) ... [
+                          Image.file(_foodPhoto!),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -149,8 +174,9 @@ class _CaptureImageState extends State<TakeAPhotoScreen>{
                             child: const Icon(Icons.crop)),
                             FlatButton(
                             onPressed: _clear, 
-                            child: const Icon(Icons.refresh))
+                            child: const Icon(Icons.delete))
                           ],),
+                          Recognize(file : _foodPhoto!, foods : allFoods),
                   
                         ]
                       ],
@@ -165,81 +191,137 @@ class _CaptureImageState extends State<TakeAPhotoScreen>{
   
 }
 
-class Upload extends StatefulWidget{
+class Recognize extends StatefulWidget{
   final File file;
+  final List<Food> foods;
   
-  Upload({Key? key, required this.file}) : super (key: key);
+  const Recognize({Key? key, required this.file,required this.foods}) : super (key: key);
 
-  createState() => _UploadState();
+  @override
+  // ignore: no_logic_in_create_state
+  createState() => _RecognizeState(file : file, foods: foods);
 
 }
 
-class _UploadState extends State<Upload>{
+class _RecognizeState extends State<Recognize>{
   final storage = firebase_storage.FirebaseStorage.instance;
   User? user = FirebaseAuth.instance.currentUser;
+  final File file;
+  final List<Food> foods;
+  Food food=Food();
 
-  firebase_storage.UploadTask? _uploadTask;
+ 
+  _RecognizeState({required this.file,required this.foods});
+  Future<void> _startRecognize() async {
+    
 
-  void _startUpload(){
-    String filePath = 'user-profile/' + user!.uid + '.png';
+    FirebaseModelDownloader.instance
+    .getModel(
+        "FoodRecognition",
+        FirebaseModelDownloadType.localModel,
+        FirebaseModelDownloadConditions(
+          iosAllowsCellularAccess: true,
+          iosAllowsBackgroundDownloading: false,
+          androidChargingRequired: false,
+          androidWifiRequired: false,
+          androidDeviceIdleRequired: false,
+        )
+    )
+    .then((customModel) async {
+      final localModelPath = customModel.file;
+      final interpreter = await tfl.Interpreter.fromFile(localModelPath);
 
-    setState((){
-    _uploadTask = storage.ref().child(filePath).putFile(widget.file);
+      var dictionary = {0: 'macarons',
+                        1: 'french toast',
+                        2: 'lobster bisque',
+                        3: 'prime rib',
+                        4: 'pork chop',
+                        5: 'baby back ribs'};
+
+
+    var _inputShape = interpreter.getInputTensor(0).shape;
+    var _inputType = interpreter.getInputTensor(0).type;
+    var _outputShape = interpreter.getOutputTensor(0).shape;
+    var _outputType = interpreter.getOutputTensor(0).type;
+
+    var _outputBuffer = TensorBuffer.createFixedSize(_outputShape, _outputType);
+
+    var _probabilityProcessor =
+          TensorProcessorBuilder().add(NormalizeOp(0, 255)).build();
+
+    //Start the image process
+    var _inputImage = TensorImage(_inputType);
+
+    Img.Image imageInput = Img.decodeImage(file.readAsBytesSync())!;
+    _inputImage.loadImage(imageInput);
+
+    int cropSize = min(_inputImage.height, _inputImage.width);
+    _inputImage = ImageProcessorBuilder()
+        .add(ResizeWithCropOrPadOp(cropSize, cropSize))
+        .add(ResizeOp(
+            _inputShape[1], _inputShape[2], ResizeMethod.NEAREST_NEIGHBOUR))
+        .add(NormalizeOp(0, 1))
+        .build()
+        .process(_inputImage);
+      
+    interpreter.run(_inputImage.buffer,_outputBuffer.getBuffer());
+    var output = _outputBuffer.buffer.asFloat32List();
+    double mx = 0;
+    var index = 0;
+    for (int  i = 0 ; i < output.length ;i ++)
+    {
+      if(mx < output[i])
+      {
+          mx = output[i];
+          index = i;
+      }
     }
-    );
+    
+   var foodName = dictionary[index];
+   List<Food> searchedFoods = searchFood(foodName!);
+
+   if(searchedFoods.isNotEmpty)
+   { food = searchedFoods[0];
+    setState(() {});
+   }
+
+    });
+  }
+
+    List<Food> searchFood(String query) {
+    final searchFoods = foods.where((food){
+      final foodName = food.name!.toLowerCase();
+      final search = query.toLowerCase();
+      return foodName.contains(search);
+    }).toList();
+    return searchFoods;
   }
 
 
   @override
   Widget build(BuildContext context) {
-      if(_uploadTask != null){
 
-        
-
-        return StreamBuilder<firebase_storage.TaskSnapshot>(
-          stream: _uploadTask!.snapshotEvents,
-          builder: (context,snapshot){
-            var event = snapshot.data ?? null;
-
-            double progressPercent = event != null?
-                                  event.bytesTransferred/event.totalBytes : 0 ;
-
-           if(progressPercent == 1)
-           Future.delayed(const Duration(seconds: 1), (){
-             Navigator.of(context).pushReplacement(MaterialPageRoute(
-                 builder: (context) => const MoreScreen()));
-           });
-            
-
-            return Column(
-              children: [
-                if(_uploadTask!.snapshot.state == firebase_storage.TaskState.success)
-                  Text('Profile Pic Changed'),
-                if(_uploadTask!.snapshot.state == firebase_storage.TaskState.paused)
-                  FlatButton(onPressed:() => _uploadTask!.resume(),
-                   child: Icon(Icons.play_arrow)),
-                if(_uploadTask!.snapshot.state == firebase_storage.TaskState.running)
-                   FlatButton(onPressed:() => _uploadTask!.pause(),
-                   child: Icon(Icons.pause)),
-
-                LinearProgressIndicator(value : progressPercent),
-                Text('${(progressPercent*100).toStringAsFixed(2)}%'),
-
-
-
-              ],
-            );
-
-          });
-
-      }
-      else
-      {
+    if(food.barcode == null)
+    {
         return FlatButton.icon(
-          label: Text ('Set Profile Picture'),
-          icon: Icon(Icons.cloud_upload),
-          onPressed: _startUpload,);
-      }
+          label: Text ('Find'),
+          icon: Icon(Icons.search),
+          onPressed: _startRecognize,); 
+    }
+    else
+    {
+      return FlatButton.icon(
+          label: Text ('${food.name}'),
+          icon: Icon(Icons.add),
+          onPressed: () => {
+              Navigator.push(context, MaterialPageRoute
+            (builder: (context) => FoodScreen(foodId: food.barcode!)))
+          }); 
+      
+    }
   }
+
+
+  
 
 }

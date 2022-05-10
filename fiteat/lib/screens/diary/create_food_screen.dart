@@ -438,7 +438,7 @@ class _CreateFoodScreenState extends State<CreateFoodScreen> {
     Food food = Food();
     if( barcode == "")
     {
-      await firebaseFirestore.collection('food').get().then((value) => { barcode = value.size.toString(),
+      await firebaseFirestore.collection('food').get().then((value) => { barcode = (value.size.toInt() + 1).toString(),
       food =  Food(name:name ,additional: additional, calories: double.parse(calories),protein: double.parse(protein),carbs: double.parse(carbs),fat:double.parse(fat),servingSize: servingSize,barcode: barcode),
       firebaseFirestore.collection('food').doc(barcode).set(food.toMap())});
     }
