@@ -505,7 +505,6 @@ class _DiaryScreenState extends State<DiaryScreen> {
                               key: Key(item.food.barcode.toString()),
                               child: Container(
                                 color: Colors.white,
-                                        Text(item.food.name!),
                                 child: Padding(
                                   padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                                   child: Row(
