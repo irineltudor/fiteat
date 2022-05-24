@@ -996,7 +996,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                           ),
                           flexibleSpace: FlexibleSpaceBar(
                             title: Text(
-                              'Excercises',
+                              'Exercises',
                               style:
                                   TextStyle(color: Colors.black, fontSize: 16),
                             ),

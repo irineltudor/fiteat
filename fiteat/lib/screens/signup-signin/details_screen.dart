@@ -468,7 +468,7 @@ Widget _infoPopUpDialog(BuildContext context) {
         ),
         SizedBox(height: 10),
         Text(
-          "Very Active - 4 hours and 15 minutes of excercises",
+          "Very Active - 4 hours and 15 minutes of exercises",
           style: TextStyle(fontSize: 14),
         ),
       ],
