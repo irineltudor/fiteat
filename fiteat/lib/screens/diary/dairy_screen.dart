@@ -216,13 +216,16 @@ class _DiaryScreenState extends State<DiaryScreen> {
       ),
     );
 
-    if (diary.food == null || loggedInUser.activitylevel == null)
+    if (diary.food == null || loggedInUser.firstName == null){
+      print(diary.food);
+      print(loggedInUser.firstName);
       return Container(
           color: Color(0xFFfc7b78),
           child: Center(
               child: CircularProgressIndicator(
             color: Colors.white,
           )));
+    }
     else {
       int goalCalories = loggedInUser.goalcalories! + diary.exercise!.toInt();
       int caloriesLeft = goalCalories - diary.food!.toInt();
