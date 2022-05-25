@@ -211,7 +211,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       user?.updatePassword(newPassword).then((value) => errorMessage = "Successfully changed password").catchError((onError){
             errorMessage = "Password can't be changed" + onError.toString();
       });
-
+      newPasswordEditingController.text = "";
+      renewPasswordEditingController.text = "";
       Fluttertoast.showToast(msg: '$errorMessage');
       
    }

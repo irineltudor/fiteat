@@ -255,6 +255,10 @@ class _ChangeGoalScreenState extends State<ChangeGoalScreen> {
               weeklyGoalEditingController.text,
               caloriesEditingController.text,
               birthEditingControler.text);
+              weightEditingController.text = "";
+              heightEditingController.text= "";
+              caloriesEditingController.text= "";
+
         },
         child: const Text(
           "Update",
