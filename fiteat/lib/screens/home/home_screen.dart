@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiteat/model/diary.dart';
 import 'package:fiteat/screens/diary/dairy_screen.dart';
+import 'package:fiteat/screens/home/article_screen.dart';
 import 'package:fiteat/screens/home/news_screen.dart';
 import 'package:fiteat/screens/more/more_screen.dart';
 import 'package:fiteat/screens/signup-signin/login_screen.dart';
@@ -15,6 +16,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../model/news.dart';
 import '../../model/user_model.dart';
+import 'package:newsapi/newsapi.dart';
 
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:intl/intl.dart';
@@ -33,6 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
   List<News> news = [];
+  List<Article> articles = [];
+  var newsApi = NewsApi(
+  debugLog: true,
+  apiKey: '8ce62fa23e8d4135b0513a87c6148404',
+  );
 
   Diary diary = Diary();
 
@@ -81,6 +88,23 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {});
     }).catchError((onError) => { print(onError.toString())});
 
+
+await newsApi.topHeadlines(
+//    country: country,
+      category: 'health',
+//    sources: sources,
+      q: 'food',
+      language: 'en',
+//    pageSize: pageSize,
+//    page: page,
+  ).then((value){
+    articles = value.articles!;
+    setState(() {});
+    print(articles.length);
+  });
+
+  
+  
   }
 
   @override
@@ -91,12 +115,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-    if(diary.food == null || loggedInUser.activitylevel == null)
+    if(diary.food == null || loggedInUser.activitylevel == null || articles.length == 0)
       return Container(
         color: Color(0xFFfc7b78),
         child: Center(child: CircularProgressIndicator(color: Colors.white,)));
     else
     {
+
+
    int goalCalories = loggedInUser.goalcalories! + diary.exercise!.toInt();
    int caloriesLeft = goalCalories - diary.food!.toInt();
    caloriesLeft = caloriesLeft < 0 ? 0 : caloriesLeft;
@@ -272,8 +298,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(
                                 width: 32,
                               ),
-                              for(int i=0;i < news.length ;i++)
-                              _NewsCard(news: news[i],),
+                              for(int i=0;i < 7 ;i++)
+                                _ArticleCard(article: articles[i]),
+                              for(int i=0;i < news.length;i++)
+                                   _NewsCard(news: news[i],),
                       ],
                     )),),
                     SizedBox(
@@ -523,5 +551,98 @@ class _NewsCard extends StatelessWidget{
   }
 }
 
+
+
+class _ArticleCard extends StatelessWidget{
+  final Article article;
+  final storage = Storage();
+
+  _ArticleCard({Key? key, required this.article}) :super(key: key);
+  
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    var pos = article.description.length;
+    String summary = ( pos > 100 ) ? '${article.description.substring(0,100)}...' : article.description;
+    return Container(
+          width: width * 0.75,
+          margin: const EdgeInsets.only(
+            right: 20,
+            bottom: 10,
+          ),
+          child: Material(
+            borderRadius: BorderRadius.all(Radius.circular(45)),
+            child: MaterialButton(
+              splashColor: Colors.black26,
+             shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(45),
+            ),
+                    onPressed: () =>{
+                                    //In order to use go back
+          Navigator.push(context, MaterialPageRoute
+          (builder: (context) => ArticleScreen(article: article)))
+      },child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Flexible(
+                    fit:FlexFit.tight,
+                    child:  ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(45)),
+                      child:  Image.network(article.urlToImage,
+                                width:300,
+                                fit: BoxFit.fitWidth,
+                                errorBuilder: (context,url,error){
+                                  return Container(
+                                    color: Color.fromARGB(255, 19, 147, 221) , 
+                                  child: Center(
+                                    child: Text('Health News',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900
+                                    ),),
+                                  ),);
+                                },
+                    ),
+                   ),
+                  ),
+                  Flexible(
+                    fit:FlexFit.tight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left:15.0,right: 15.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children:[
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(article.title , 
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                          color: Colors.black
+                          ),),
+                        Text(summary, 
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          color: Colors.black45
+                          ),),
+                        const SizedBox(
+                          height: 16,
+                        )
+            
+                        ]),
+                    ),)
+                ]),
+            ),
+            ),
+
+    );
+  }
+}
 
 
