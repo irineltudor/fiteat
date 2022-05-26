@@ -90,9 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 await newsApi.topHeadlines(
-//    country: country,
+      country:'us',
       category: 'health',
-//    sources: sources,
       q: 'food',
       language: 'en',
 //    pageSize: pageSize,
@@ -101,7 +100,7 @@ await newsApi.topHeadlines(
     articles = value.articles!;
     setState(() {});
     print(articles.length);
-  });
+  }).catchError((onError){ print("Caught article error :" +onError.toString());});
 
   
   
@@ -115,7 +114,7 @@ await newsApi.topHeadlines(
 
 
 
-    if(diary.food == null || loggedInUser.activitylevel == null || articles.length == 0)
+    if(diary.food == null || loggedInUser.activitylevel == null)
       return Container(
         color: Color(0xFFfc7b78),
         child: Center(child: CircularProgressIndicator(color: Colors.white,)));
@@ -298,7 +297,7 @@ await newsApi.topHeadlines(
                               SizedBox(
                                 width: 32,
                               ),
-                              for(int i=0;i < 7 ;i++)
+                              for(int i=0;i < articles.length ;i++)
                                 _ArticleCard(article: articles[i]),
                               for(int i=0;i < news.length;i++)
                                    _NewsCard(news: news[i],),
@@ -644,5 +643,3 @@ class _ArticleCard extends StatelessWidget{
     );
   }
 }
-
-
