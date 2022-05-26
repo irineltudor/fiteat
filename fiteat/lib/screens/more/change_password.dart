@@ -1,7 +1,10 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fiteat/model/user_model.dart';
 import 'package:fiteat/screens/home/home_screen.dart';
+import 'package:fiteat/screens/more/more_screen.dart';
 import 'package:fiteat/widget/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +24,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-
+ final TextEditingController oldPasswordEditingController = TextEditingController();
  final TextEditingController newPasswordEditingController = TextEditingController();
  final TextEditingController renewPasswordEditingController  = TextEditingController();
   // string for displaying the error
@@ -53,6 +56,41 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+
+    final oldPasswordField = TextFormField(
+      autofocus: false,
+      controller: oldPasswordEditingController,
+      obscureText: true,
+      style: const TextStyle(color: Colors.black),
+      keyboardType: TextInputType.visiblePassword,
+      validator: (value) {
+       RegExp regex = new RegExp(r'^.{6,}$');
+        if (value!.isEmpty) {
+          return ("Current Password is required for login");
+        }
+
+        if (!regex.hasMatch(value)) {
+          return ("Enter a valid password (min 6 characters)");
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        oldPasswordEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.vpn_key, color: Colors.black),
+        contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "Current Password",
+        hintStyle: TextStyle(color: Colors.black),
+        errorStyle: TextStyle(color: Colors.black),
+        border: InputBorder.none,
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderSide: BorderSide(color: Colors.black)),
+      ),
+    );
 
 
     final newPasswordField = TextFormField(
@@ -132,7 +170,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         minWidth: MediaQuery.of(context).size.width / 4,
         onPressed: () {
 
-          changePassword(newPasswordEditingController.text);
+          changePassword(newPasswordEditingController.text,oldPasswordEditingController.text);
         },
         child: const Text(
           "Update",
@@ -190,6 +228,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               fontSize: 18,
                               fontWeight: FontWeight.w800),),
                               SizedBox(height: 20,),
+                              Text('Current Password ' , 
+                              style: TextStyle(color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800),),
+                              oldPasswordField,
+                              SizedBox(height: 20,),
+                              Text('New Password' , 
+                              style: TextStyle(color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800),),
+                              SizedBox(height: 20,),
                               newPasswordField,
                               SizedBox(height: 20,),
                               renewPasswordField,
@@ -206,12 +255,44 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ));
   }
 
-  void changePassword(String newPassword) {
+  Future<void> changePassword(String newPassword,String oldPassword) async {
    if (_formKey.currentState!.validate()) {
-      user?.updatePassword(newPassword).then((value) => errorMessage = "Successfully changed password").catchError((onError){
+     var credentials = EmailAuthProvider.credential(email: user?.email ?? " " , password: oldPassword);
+     try{
+      await user?.reauthenticateWithCredential(credentials).then((value) => {
+     user?.updatePassword(newPassword).then((value) => {errorMessage = "Successfully changed password",Fluttertoast.showToast(msg: '$errorMessage'),Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const MoreScreen()))}).catchError((onError){
             errorMessage = "Password can't be changed" + onError.toString();
-      });
-      Fluttertoast.showToast(msg: '$errorMessage');
+            Fluttertoast.showToast(msg: '$errorMessage');
+      })
+     });
+     }on FirebaseAuthException catch (error) {
+        switch (error.code) {
+          case "invalid-email":
+            errorMessage = "Your email address appears to be malformed.";
+
+            break;
+          case "wrong-password":
+            errorMessage = "Your password is wrong.";
+            break;
+          case "user-not-found":
+            errorMessage = "User with this email doesn't exist.";
+            break;
+          case "user-disabled":
+            errorMessage = "User with this email has been disabled.";
+            break;
+          case "too-many-requests":
+            errorMessage = "Too many requests";
+            break;
+          case "operation-not-allowed":
+            errorMessage = "Signing in with Email and Password is not enabled.";
+            break;
+          default:
+            errorMessage = "An undefined Error happened.";
+        }
+        Fluttertoast.showToast(msg: '$errorMessage');
+     }
+      
+      
       
    }
 }
