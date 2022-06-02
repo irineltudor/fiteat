@@ -89,20 +89,24 @@ class _HomeScreenState extends State<HomeScreen> {
     }).catchError((onError) => { print(onError.toString())});
 
 
-await newsApi.topHeadlines(
-      country:'us',
-      category: 'health',
-      q: 'food',
-      language: 'en',
+
+await newsApi.everything(
+    q: 'food&eat',
+    qInTitle: 'title,content,description',
+//    sources: sources,
+    //domains: 'nih.gov',
+    excludeDomains:'lifehacker.com, nytimes.com, theguardian.com, businessinsider.com, cnn.com, reuters.com',
+  //  from: DateTime(DateTime.now().year - 1), // support DateTime or String
+//    to: to, // support DateTime or String
+ //   language: 'en',
+//    sortBy: sortBy,
 //    pageSize: pageSize,
 //    page: page,
   ).then((value){
-    articles = value.articles!;
+        articles = value.articles!;
     setState(() {});
     print(articles.length);
   }).catchError((onError){ print("Caught article error :" +onError.toString());});
-
-  
   
   }
 
